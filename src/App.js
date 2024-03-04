@@ -2,6 +2,7 @@ import { Container } from 'react-bootstrap';
 import { NavBarHeader } from './components/NavBarHeader';
 import { BasicScreen } from './screens/BasicScreen';
 import { ContextScreen } from './screens/ContextScreen';
+import { MinSpanningTreeScreen } from './screens/MinSpanningTree';
 
 import './global.css';
 
@@ -28,6 +29,7 @@ function App() {
           <Routes>
             <Route path="/" element={<BasicScreen />} />
             <Route path="/context" element={<ContextScreen />} />
+            <Route path="/min-spanning-tree" element={<MinSpanningTreeScreen />} />
           </Routes>
         </Container>
 

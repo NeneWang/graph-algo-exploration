@@ -26,7 +26,7 @@ export const NavBarHeader = () => {
         <Navbar.Brand
           onClick={() => navigate('/')}
         >
-          <BsAppIndicator /> Algorithm
+          <BsAppIndicator /> Graph Problems
         </Navbar.Brand>
         {userName ?
           (
