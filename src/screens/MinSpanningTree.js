@@ -212,6 +212,19 @@ export function MinSpanningTreeScreen() {
 
     }
 
+    const handleFinishAlgorithm = () => {
+
+        setIsAlgorithmFinished(true)
+
+        if (isLoop) {
+            resetAlgorithm()
+
+        }else{
+            stopAlgorithm()
+        }
+    }
+
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const stepAlgorithm = useCallback(async () => {
         console.log("Step Algorithm", selectedAlgorithm, step)
@@ -219,8 +232,7 @@ export function MinSpanningTreeScreen() {
             case 'Kruskal Algorithm':
                 if (edgestStack.length === 0) {
                     console.log("No more edges")
-                    setIsAlgorithmFinished(true)
-                    stopAlgorithm()
+                    handleFinishAlgorithm()
                     break;
                 }
                 setStep(step + 1)
@@ -300,6 +312,10 @@ export function MinSpanningTreeScreen() {
         clearInterval(intervalId);
     };
 
+    const toggleLoop = () => {
+        setIsLoop(!isLoop);
+    }
+
 
 
 
@@ -365,6 +381,7 @@ export function MinSpanningTreeScreen() {
                             </Button>
                             <Button onClick={() => stepAlgorithm()} >Step</Button>
                             <Button onClick={() => resetAlgorithm()}  >Reset</Button>
+                            <Button onClick={() => toggleLoop()} >{ isLoop ? 'Is Loop': 'No Loop' }</Button>
                         </Col>
                     </Row>
                     <hr />
