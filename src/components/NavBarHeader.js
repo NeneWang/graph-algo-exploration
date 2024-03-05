@@ -16,9 +16,6 @@ export const NavBarHeader = () => {
     signOut(navigate);
   };
 
-  const handleProfile = () => {
-    // navigate('/profile');
-  };
 
   return (
     <Navbar className="bg-body-tertiary">
@@ -32,9 +29,6 @@ export const NavBarHeader = () => {
           (
             <div className="ms-auto">
 
-              <a className="linkStyle" onClick={handleProfile}>
-                Profile
-              </a>
               {/* Some pdding */}
               <Button className="" variant="outline-secondary"
                 onClick={handleLogout}

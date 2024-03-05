@@ -20,7 +20,6 @@ const ProtectedRoute = ({ user, children }) => {
 };
 
 function App() {
-  const userName = sessionStorage.getItem('user');
   return (
     <div className="App">
       <Router>
@@ -32,12 +31,6 @@ function App() {
             <Route path="/min-spanning-tree" element={<MinSpanningTreeScreen />} />
           </Routes>
         </Container>
-{/* 
-        <footer className="py-3" style={{ position: "absolute", bottom: 0, width: "100vw" }}>
-          <Container className='text-center'>
-            <small className="text-muted">&copy; 2024</small>
-          </Container>
-        </footer> */}
       </Router>
     </div>
   );
