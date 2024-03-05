@@ -21,3 +21,7 @@
 .hoverable:hover {
   transform: scale(1.05);
 }
+
+.controls{
+  margin-top: 27em;
+}
