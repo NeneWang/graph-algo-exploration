@@ -8,7 +8,7 @@ import './global.css';
 
 
 
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, RouterProvider } from 'react-router-dom';
 
 const ProtectedRoute = ({ user, children }) => {
   console.log(user, 'user')
@@ -22,7 +22,6 @@ const ProtectedRoute = ({ user, children }) => {
 function App() {
   return (
     <div className="App">
-      <Router>
         <NavBarHeader className="clickeable" />
         <Container fluid className='mx-auto col-md-8'>
           <Routes>
@@ -31,7 +30,6 @@ function App() {
             <Route path="/min-spanning-tree" element={<MinSpanningTreeScreen />} />
           </Routes>
         </Container>
-      </Router>
     </div>
   );
 }

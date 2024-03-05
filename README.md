@@ -19,7 +19,8 @@ $ git remote add origin https://github.com/nenewang/graph-algo-exploration.git
 
 ## Backlog
 
-- [ ] Add Prism Algorithm for visualizatioin
+- [ ] Add Prism Algorithm for visualization
+- [ ] Draw Analogies 
 - [ ] Add A* Search for visualization
 - [ ] Add Adversarial Search and Pruning for visualization
 
