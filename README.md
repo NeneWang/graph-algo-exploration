@@ -4,5 +4,23 @@ The project aims to develop interactive visualizations for a set of algorithms, 
 visualizations for: Fleury's Algorithm, Connected Components, Topological Sort, Floyd Warshall, Greedy Algorithm, Heapify, and Bellman Ford Algorithm.
 
 
+## Current Features
+
+
+
+
+## Deployment
+
+```
+$ npm install gh-pages --save-dev
+$ git remote add origin https://github.com/nenewang/graph-algo-exploration.git
+```
+
+
+## Backlog
+
+- [ ] Add Prism Algorithm for visualizatioin
+- [ ] Add A* Search for visualization
+- [ ] Add Adversarial Search and Pruning for visualization
 
 

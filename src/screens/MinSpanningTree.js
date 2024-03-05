@@ -294,7 +294,7 @@ export function MinSpanningTreeScreen() {
 
     useEffect(() => {
         createSmallestEdgesHeap()
-    })
+    }, [])
 
 
     const stepAlgorithmRef = useRef(stepAlgorithm);
