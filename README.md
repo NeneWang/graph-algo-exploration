@@ -1,8 +1,8 @@
-# SBUHack 24
-Our project for the Stony Brook Hackathon
+# Graph Algo Exploration
 
-# Downlad needed
-- react-speech-recognition
-- react-icons
-- react-bootstrap
-- firebase
+The project aims to develop interactive visualizations for a set of algorithms, coupled with references to relevant problems and test sets. Must-have algorithms include visualizations from algorithm such as Kruskal's Algorithm, Prim's Algorithm, A* Search, Adversarial Search and Pruning, and Minimum Spanning Tree. Problems references to relevant problems and test sets will be included for each algorithm. Optionally the student will attempt into developing
+visualizations for: Fleury's Algorithm, Connected Components, Topological Sort, Floyd Warshall, Greedy Algorithm, Heapify, and Bellman Ford Algorithm.
+
+
+
+
