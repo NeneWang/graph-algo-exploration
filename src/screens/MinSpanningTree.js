@@ -144,11 +144,12 @@ export function MinSpanningTreeScreen() {
     const [isLoop, setIsLoop] = useState(false)
 
     const [isAlgorithmFinished, setIsAlgorithmFinished] = useState(false)
-    const [speed, setSpeed] = useState(2);
+    const [speed, setSpeed] = useState(3);
     const [key, setKey] = useState('Graph');
     const [highlightedIds, setHighlightedIds] = useState([
     ]);
     const [highlightedNodes, setHighlightedNodes] = useState([]);
+    const [minimumSpanningTreeEdges, setMinimumSpanningTreeEdges] = useState([])
 
     const [edgestStack, setEdgesStack] = useState([])
     const [isRunning, setIsRunning] = useState(false)
@@ -219,7 +220,7 @@ export function MinSpanningTreeScreen() {
         if (isLoop) {
             resetAlgorithm()
 
-        }else{
+        } else {
             stopAlgorithm()
         }
     }
@@ -237,10 +238,10 @@ export function MinSpanningTreeScreen() {
                 }
                 setStep(step + 1)
                 // Run the Kruskal, whereas it would highlight the edges ( if not creates an cycle)
-                const removeTop = edgestStack.shift()
+                const topEdge = edgestStack.shift()
                 setEdgesStack(edgestStack)
-                const sourceNodeId = removeTop.source
-                const targetNodeId = removeTop.target
+                const sourceNodeId = topEdge.source
+                const targetNodeId = topEdge.target
 
                 // If any of source or target is on the highlightedIds, then it would create a cycle
                 if (highlightedIds.includes(sourceNodeId) && highlightedIds.includes(targetNodeId)) {
@@ -248,7 +249,7 @@ export function MinSpanningTreeScreen() {
 
                     const beforeHighlight = [...highlightedIds];
 
-                    setHighlightedIds([...highlightedIds, removeTop.id, sourceNodeId, targetNodeId])
+                    setHighlightedIds([...highlightedIds, topEdge.id, sourceNodeId, targetNodeId])
                     // markRedTransaction(
                     //     removeTop
                     // )
@@ -261,8 +262,8 @@ export function MinSpanningTreeScreen() {
                     break;
                 }
 
-
-                setHighlightedIds([...highlightedIds, removeTop.id, sourceNodeId, targetNodeId])
+                setMinimumSpanningTreeEdges([...minimumSpanningTreeEdges, topEdge])
+                setHighlightedIds([...highlightedIds, topEdge.id, sourceNodeId, targetNodeId])
 
 
                 break;
@@ -282,6 +283,7 @@ export function MinSpanningTreeScreen() {
         setEdgesStack([])
         setIsAlgorithmFinished(false)
         setIsRunning(false)
+        setMinimumSpanningTreeEdges([])
 
 
         if (selectedAlgorithm === 'Kruskal Algorithm') {
@@ -381,7 +383,7 @@ export function MinSpanningTreeScreen() {
                             </Button>
                             <Button onClick={() => stepAlgorithm()} >Step</Button>
                             <Button onClick={() => resetAlgorithm()}  >Reset</Button>
-                            <Button onClick={() => toggleLoop()} >{ isLoop ? 'Is Loop': 'No Loop' }</Button>
+                            <Button onClick={() => toggleLoop()} >{isLoop ? 'Is Loop' : 'No Loop'}</Button>
                         </Col>
                     </Row>
                     <hr />
@@ -414,6 +416,31 @@ Step 2: Pick the smallest edge. */}
                             </>
                         )}
                     </Row>
+                    {minimumSpanningTreeEdges && minimumSpanningTreeEdges.length > 0 &&
+                        <Row>
+                            <br />
+                            {/* Show the Minimum Spanning Tree */}
+                            <h3>Minimum Spanning Tree</h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Edge</th>
+                                        <th>Weight</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {minimumSpanningTreeEdges.map((edge, index) => (
+                                        <tr key={index}>
+                                            <td>{edge.id}</td>
+                                            <td>{edge.value}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+
+
+                        </Row>}
 
                     <hr />
                     <Row>
