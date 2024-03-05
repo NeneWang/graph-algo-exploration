@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/graph-algo-exploration/static/css/main.23b1fe83.css",
+    "main.js": "/graph-algo-exploration/static/js/main.7c020660.js",
+    "index.html": "/graph-algo-exploration/index.html",
+    "main.23b1fe83.css.map": "/graph-algo-exploration/static/css/main.23b1fe83.css.map",
+    "main.7c020660.js.map": "/graph-algo-exploration/static/js/main.7c020660.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.23b1fe83.css",
+    "static/js/main.7c020660.js"
+  ]
+}
