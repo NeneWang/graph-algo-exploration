@@ -100,12 +100,156 @@ const algorithms = [
     }
 ]
 
-const examples = [
+const examplesDatasets = [
     {
-        name: 'Default Example'
+        name: 'Default Example',
+        nodes: simpleNodes,
+        edges: simpleEdges
+
     },
     {
-        name: 'IA. 21.4'
+        name: 'IA. 21.4',
+        nodes: [
+            {
+                id: 'a',
+                label: 'a'
+            },
+            {
+                id: 'b',
+                label: 'b'
+            },
+            {
+                id: 'c',
+                label: 'c'
+            },
+            {
+                id: 'd',
+                label: 'd'
+            },
+            {
+                id: 'e',
+                label: 'e'
+            },
+            {
+                id: 'f',
+                label: 'f'
+            },
+            {
+                id: 'g',
+                label: 'g'
+            },
+            {
+                id: 'h',
+                label: 'h'
+            },
+            {
+                id: 'i',
+                label: 'i'
+            }
+        ],
+        edges: [
+            {
+                id: 'a->b',
+                source: 'a',
+                target: 'b',
+                label: '4',
+                value: 4
+            },
+            {
+                id: 'a->h',
+                source: 'a',
+                target: 'h',
+                label: '8',
+                value: 8
+            },
+            {
+                id: 'b->c',
+                source: 'b',
+                target: 'c',
+                label: '8',
+                value: 8
+            },
+            {
+                id: 'b->h',
+                source: 'b',
+                target: 'h',
+                label: '11',
+                value: 11
+            },
+            {
+                id: 'c->d',
+                source: 'c',
+                target: 'd',
+                label: '7',
+                value: 7
+            },
+            {
+                id: 'c->f',
+                source: 'c',
+                target: 'f',
+                label: '4',
+                value: 4
+            },
+            {
+                id: 'c->i',
+                source: 'c',
+                target: 'i',
+                label: '2',
+                value: 2
+            },
+            {
+                id: 'd->e',
+                source: 'd',
+                target: 'e',
+                label: '9',
+                value: 9
+            },
+            {
+                id: 'd->f',
+                source: 'd',
+                target: 'f',
+                label: '14',
+                value: 14
+            },
+            {
+                id: 'e->f',
+                source: 'e',
+                target: 'f',
+                label: '10',
+                value: 10
+            },
+            {
+                id: 'f->g',
+                source: 'f',
+                target: 'g',
+                label: '2',
+                value: 2
+
+            },
+            {
+                id: 'g->h',
+                source: 'g',
+                target: 'h',
+                label: '1',
+                value: 1,
+            },
+            {
+                id: 'g->i',
+                source: 'g',
+                target: 'i',
+                label: '6',
+                value: 6
+            },
+            {
+                id: 'h->i',
+                source: 'h',
+                target: 'i',
+                label: '7',
+                value: 7
+            }
+        ]
+
+
     },
     {
         name: 'Smaller'
@@ -120,10 +264,37 @@ const examples = [
 const regularTheme = {
     node: {
         fill: '#45f248',
-
     }
 }
 
+function hasCycle(edges) {
+    const disjointSet = {};
+
+    function find(node) {
+        if (disjointSet[node] === undefined)
+            return node;
+        return find(disjointSet[node]);
+    }
+
+    function union(source, target) {
+        const sourceRoot = find(source);
+        const targetRoot = find(target);
+        if (sourceRoot !== targetRoot) {
+            disjointSet[sourceRoot] = targetRoot;
+            return false;
+        }
+        return true;
+    }
+
+    for (const edge of edges) {
+        const { source, target } = edge;
+        if (union(source, target)) {
+            return true;
+        }
+    }
+
+    return false;
+}
 
 
 
@@ -135,7 +306,7 @@ export function MinSpanningTreeScreen() {
     )
 
     const [selectedExample, setSelectedExample] = useState(
-        examples[0].name
+        examplesDatasets[0]
     )
 
     const [step, setStep] = useState(0)
@@ -148,6 +319,7 @@ export function MinSpanningTreeScreen() {
     const [key, setKey] = useState('Graph');
     const [highlightedIds, setHighlightedIds] = useState([
     ]);
+    const [highlightEdges, setHighlightEdges] = useState([]);
     const [highlightedNodes, setHighlightedNodes] = useState([]);
     const [minimumSpanningTreeEdges, setMinimumSpanningTreeEdges] = useState([])
 
@@ -170,7 +342,8 @@ export function MinSpanningTreeScreen() {
 
     const createSmallestEdgesHeap = () => {
         // Create a copy of edges.
-        const tempEdges = [...edges]
+        console.log("Selected Example", selectedExample)
+        const tempEdges = [...selectedExample.edges]
         let tempEdgestStack = tempEdges.sort((a, b) => a.value - b.value)
 
 
@@ -213,6 +386,27 @@ export function MinSpanningTreeScreen() {
 
     }
 
+    /**
+     * 
+     * @param {string} newExample Example selected.
+     */
+    const handleExampleChange = async (newExample) => {
+        console.log(
+            "Attempting to change example to:" + newExample
+
+        )
+        const selectedDataset = examplesDatasets.find(
+            (example) => example.name === newExample
+        )
+
+        console.log("Selected Example", selectedDataset)
+        setSelectedExample(selectedDataset)
+        setNodes(selectedDataset.nodes)
+        setEdges(selectedDataset.edges)
+        
+
+    }
+
     const handleFinishAlgorithm = () => {
 
         setIsAlgorithmFinished(true)
@@ -244,23 +438,28 @@ export function MinSpanningTreeScreen() {
                 const targetNodeId = topEdge.target
 
                 // If any of source or target is on the highlightedIds, then it would create a cycle
-                if (highlightedIds.includes(sourceNodeId) && highlightedIds.includes(targetNodeId)) {
+                // TODO Algorithm is incorrect.
+
+                const test_edges = [...highlightEdges, topEdge]
+                console.log("Test Edges", hasCycle(test_edges), test_edges)
+                if (hasCycle(test_edges)) {
+                    const beforeHighlight = [...highlightedIds];
                     // Make a small animation where it highlights the line, and remove after 100 seconds.
 
-                    const beforeHighlight = [...highlightedIds];
 
                     setHighlightedIds([...highlightedIds, topEdge.id, sourceNodeId, targetNodeId])
                     // markRedTransaction(
-                    //     removeTop
+                        //     removeTop
                     // )
 
                     await delay(100);
                     setHighlightedIds(beforeHighlight)
 
-
+                    
                     console.log("Cycle Detected")
                     break;
                 }
+                setHighlightEdges([...highlightEdges, topEdge])
 
                 setMinimumSpanningTreeEdges([...minimumSpanningTreeEdges, topEdge])
                 setHighlightedIds([...highlightedIds, topEdge.id, sourceNodeId, targetNodeId])
@@ -278,17 +477,20 @@ export function MinSpanningTreeScreen() {
     })
 
     const resetAlgorithm = () => {
+        console.log("Reset algorithm using dataset", selectedExample)
         setStep(0)
         setHighlightedIds([])
         setEdgesStack([])
+
         setIsAlgorithmFinished(false)
         setIsRunning(false)
         setMinimumSpanningTreeEdges([])
-
-
+        setHighlightEdges([])
+        
+        
         if (selectedAlgorithm === 'Kruskal Algorithm') {
+            
             createSmallestEdgesHeap()
-
         }
     }
 
@@ -317,9 +519,6 @@ export function MinSpanningTreeScreen() {
     const toggleLoop = () => {
         setIsLoop(!isLoop);
     }
-
-
-
 
 
     return (
@@ -446,7 +645,10 @@ Step 2: Pick the smallest edge. */}
                     <Row>
                         <Col>
                             <div className="algorithms">
-                                <Dropdown onSelect={handleSelectAlgorithm}>
+                                <Dropdown onSelect={async () => {
+                                    handleSelectAlgorithm();
+                                    resetAlgorithm()
+                                }}>
                                     <Dropdown.Toggle variant="success" id="dropdown-basic">
                                         {selectedAlgorithm}
                                     </Dropdown.Toggle>
@@ -462,13 +664,13 @@ Step 2: Pick the smallest edge. */}
 
                         <Col>
                             <div className="examples">
-                                <Dropdown onSelect={(event) => setSelectedExample(event)}>
+                                <Dropdown onSelect={(event) => handleExampleChange(event)}>
                                     <Dropdown.Toggle variant="success" id="dropdown-basic">
-                                        {selectedExample}
+                                        {selectedExample.name}
                                     </Dropdown.Toggle>
 
                                     <Dropdown.Menu>
-                                        {examples.map((example, index) => (
+                                        {examplesDatasets.map((example, index) => (
                                             <Dropdown.Item key={index} eventKey={example.name}>{example.name}</Dropdown.Item>
                                         ))}
                                     </Dropdown.Menu>
