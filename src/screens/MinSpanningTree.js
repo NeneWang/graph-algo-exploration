@@ -301,7 +301,6 @@ function hasCycle(edges) {
 
 export function MinSpanningTreeScreen() {
 
-    const [currentTheme, setCurrentTheme] = useState(regularTheme)
     const [selectedAlgorithm, setSelectedAlgorithm] = useState(
         algorithms[0].name
     )
@@ -321,7 +320,6 @@ export function MinSpanningTreeScreen() {
     const [highlightedIds, setHighlightedIds] = useState([
     ]);
     const [highlightEdges, setHighlightEdges] = useState([]);
-    const [highlightedNodes, setHighlightedNodes] = useState([]);
     const [minimumSpanningTreeEdges, setMinimumSpanningTreeEdges] = useState([])
 
     const [edgestStack, setEdgesStack] = useState([])
@@ -354,42 +352,6 @@ export function MinSpanningTreeScreen() {
         console.log("Edges Stack", tempEdgestStack)
     }
     const delay = ms => new Promise(res => setTimeout(res, ms));
-    const markRedTransaction = (edgeTarget) => {
-        /**
-         * No idea where the bug is here. It seems to break the edges id references.
-         */
-        // Finds and sets repeated node color to  fill?: string; red
-
-        const nodeSource = edgeTarget.source
-        const nodeTarget = edgeTarget.target
-
-        const isEdgeSourceInHighligted = highlightedNodes.includes(nodeSource.id)
-        const isEdgeTargetInHighligted = highlightedNodes.includes(edgeTarget.id)
-
-
-        const newNodes = nodes.map((node) => {
-            if (node.id === nodeSource.id && isEdgeSourceInHighligted) {
-                return {
-                    ...node,
-                    fill: '#ff0e0e'
-                }
-            }
-            if (node.id === nodeTarget.id && isEdgeTargetInHighligted) {
-                return {
-                    ...node,
-                    fill: '#ff0e0e'
-                }
-            }
-            return node
-        });
-
-        console.log("New Nodes", newNodes)
-
-        setNodes(newNodes)
-
-    }
-
-    
 
     /**
      * 
@@ -431,11 +393,13 @@ export function MinSpanningTreeScreen() {
         console.log("Nodes", nodes)
         switch (selectedAlgorithm) {
             case KRUSKAL_ALGORITHM:
-                if (validNeighboringEdges.length === nodes.length - 1) {
-                    console.log("Finished")
+                
+                if (edgestStack.length === 0) {
                     handleFinishAlgorithm()
                     break;
                 }
+                
+
                 setStep(step + 1)
                 const topEdge = edgestStack.shift()
                 setEdgesStack(edgestStack)
@@ -496,6 +460,9 @@ export function MinSpanningTreeScreen() {
                 }
                 setHighlightEdges([...highlightEdges, smallestEdge])
                 setMinimumSpanningTreeEdges([...minimumSpanningTreeEdges, smallestEdge])
+                
+                // Set smallest edge.
+
                 setHighlightedIds([...highlightedIds, smallestEdge.id, smallestEdge.source, smallestEdge.target])
                 // Add to prims visited nodes ONLY if the node is not already in the visited nodes.
                 if (!primsVisitedNodes.includes(smallestEdge.source)) {
@@ -589,7 +556,7 @@ export function MinSpanningTreeScreen() {
                         }) => <div style={{
                             background: 'white',
                             width: 150,
-                            theme: currentTheme,
+                            theme: regularTheme,
                             border: 'solid 1px blue',
                             borderRadius: 2,
                             padding: 5,
@@ -636,7 +603,7 @@ export function MinSpanningTreeScreen() {
                         {/* Step 1: Sort all edges in increasing order of their edge weights.
 Step 2: Pick the smallest edge. */}
                         {/* Create a table */}
-                        {edgestStack && edgestStack.length > 0 && (
+                        {(selectedAlgorithm == KRUSKAL_ALGORITHM) && edgestStack && edgestStack.length > 0 && (
                             <>
                                 Smallest Edges Heap
 

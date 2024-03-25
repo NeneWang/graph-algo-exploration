@@ -11,9 +11,21 @@ visualizations for: Fleury's Algorithm, Connected Components, Topological Sort, 
   - [x] Kruskal
 - [ ] Find Best Path
 
+
+### Minimal Spanning Tree
+
 ![](https://private-user-images.githubusercontent.com/29577570/309987089-ed60c696-9e0a-4163-be75-bab6f13867df.gif?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MTEzNDc4NTksIm5iZiI6MTcxMTM0NzU1OSwicGF0aCI6Ii8yOTU3NzU3MC8zMDk5ODcwODktZWQ2MGM2OTYtOWUwYS00MTYzLWJlNzUtYmFiNmYxMzg2N2RmLmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDAzMjUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwMzI1VDA2MTkxOVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTViMjJmMWMyYjM5NmJiMTM2MTZmMTE0ZWI2MjQ1NzIwMDg5YTkwNTU0N2I3MzE5MmY3ZmZhM2FlNmRhM2U0MWQmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.BOULChShgW2YjcYPVuww_0p9b7zlPVeewWBSfEyHVno)
 
+- Allows Resetting
+- Stepping
+- Looping Animations
+
+### Prim's Algorithm
+
 ![](demo/prims-demo.gif)
+
+
+
 
 ## Resources:
 
