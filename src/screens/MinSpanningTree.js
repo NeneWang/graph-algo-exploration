@@ -3,7 +3,8 @@ import { GraphCanvas } from 'reagraph';
 import { Dropdown, Tabs, Tab, Row, Col, Button, Form } from 'react-bootstrap';
 
 
-
+const PRIMS_ALGORITHM = 'Prim Algorithm'
+const KRUSKAL_ALGORITHM = 'Kruskal Algorithm'
 
 const simpleNodes = [
     {
@@ -91,12 +92,12 @@ const simpleEdges = [
 
 const algorithms = [
     {
-        name: 'Kruskal Algorithm',
-        description: 'Kruskal Algorithm'
+        name: KRUSKAL_ALGORITHM,
+        description: KRUSKAL_ALGORITHM
     },
     {
-        name: 'Prim Algorithm',
-        description: 'Prim Algorithm'
+        name: PRIMS_ALGORITHM,
+        description: PRIMS_ALGORITHM
     }
 ]
 
@@ -324,6 +325,7 @@ export function MinSpanningTreeScreen() {
     const [minimumSpanningTreeEdges, setMinimumSpanningTreeEdges] = useState([])
 
     const [edgestStack, setEdgesStack] = useState([])
+    const [primsVisitedNodes, setPrimsVisitedNodes] = useState([]);
     const [isRunning, setIsRunning] = useState(false)
 
     const [intervalId, setIntervalId] = useState(null);
@@ -331,7 +333,8 @@ export function MinSpanningTreeScreen() {
 
 
     const handleSelectAlgorithm = (event) => {
-        setSelectedAlgorithm(event.target.value);
+        console.log("Selected Algorithm", event)
+        setSelectedAlgorithm(event);
     };
 
     const handleSpeedChange = (event) => {
@@ -386,6 +389,8 @@ export function MinSpanningTreeScreen() {
 
     }
 
+    
+
     /**
      * 
      * @param {string} newExample Example selected.
@@ -423,39 +428,26 @@ export function MinSpanningTreeScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const stepAlgorithm = useCallback(async () => {
         console.log("Step Algorithm", selectedAlgorithm, step)
+        console.log("Nodes", nodes)
         switch (selectedAlgorithm) {
-            case 'Kruskal Algorithm':
-                if (edgestStack.length === 0) {
-                    console.log("No more edges")
+            case KRUSKAL_ALGORITHM:
+                if (validNeighboringEdges.length === nodes.length - 1) {
+                    console.log("Finished")
                     handleFinishAlgorithm()
                     break;
                 }
                 setStep(step + 1)
-                // Run the Kruskal, whereas it would highlight the edges ( if not creates an cycle)
                 const topEdge = edgestStack.shift()
                 setEdgesStack(edgestStack)
                 const sourceNodeId = topEdge.source
                 const targetNodeId = topEdge.target
-
-                // If any of source or target is on the highlightedIds, then it would create a cycle
-                // TODO Algorithm is incorrect.
-
                 const test_edges = [...highlightEdges, topEdge]
                 console.log("Test Edges", hasCycle(test_edges), test_edges)
                 if (hasCycle(test_edges)) {
                     const beforeHighlight = [...highlightedIds];
-                    // Make a small animation where it highlights the line, and remove after 100 seconds.
-
-
                     setHighlightedIds([...highlightedIds, topEdge.id, sourceNodeId, targetNodeId])
-                    // markRedTransaction(
-                        //     removeTop
-                    // )
-
                     await delay(100);
                     setHighlightedIds(beforeHighlight)
-
-                    
                     console.log("Cycle Detected")
                     break;
                 }
@@ -463,11 +455,57 @@ export function MinSpanningTreeScreen() {
 
                 setMinimumSpanningTreeEdges([...minimumSpanningTreeEdges, topEdge])
                 setHighlightedIds([...highlightedIds, topEdge.id, sourceNodeId, targetNodeId])
-
-
                 break;
-            case 'Prim Algorithm':
-                console.log("Prim Algorithm")
+
+            case PRIMS_ALGORITHM:
+                console.log("Prim Algorithm visited prims nodes", primsVisitedNodes)
+                if (primsVisitedNodes.length === nodes.length) {
+                    handleFinishAlgorithm()
+                    break;
+                }
+                setStep(step + 1)
+                // Get neighboring of visited ids edges.
+                const validNeighboringEdges = []
+                for (const nodeId of primsVisitedNodes) {
+                    const nodeEdges = edges.filter(edge => edge.source === nodeId || edge.target === nodeId)
+                    // Push the edges that are not already in the neighboring edges and not in visited edges
+                    
+                    for (const edge of nodeEdges) {
+                        if (primsVisitedNodes.includes(edge.source) && primsVisitedNodes.includes(edge.target)) {
+                            continue;
+                        }
+                        if (validNeighboringEdges.includes(edge)) {
+                            continue;
+                        }
+                        validNeighboringEdges.push(edge)
+                    }
+                                 
+
+                }
+
+                // Filter the edges that are connected to the visited nodes.
+                console.log("Neighboring Edges", validNeighboringEdges)
+                // Find the smallest edge that is not in the visited nodes.
+                // Sort the connected edges by value.
+                const sortedConnectedEdges = validNeighboringEdges.sort((a, b) => a.value - b.value);
+                const smallestEdge = sortedConnectedEdges[0];
+                if (!smallestEdge) {
+                    console.log("No more edges")
+                    handleFinishAlgorithm()
+                    break;
+                }
+                setHighlightEdges([...highlightEdges, smallestEdge])
+                setMinimumSpanningTreeEdges([...minimumSpanningTreeEdges, smallestEdge])
+                setHighlightedIds([...highlightedIds, smallestEdge.id, smallestEdge.source, smallestEdge.target])
+                // Add to prims visited nodes ONLY if the node is not already in the visited nodes.
+                if (!primsVisitedNodes.includes(smallestEdge.source)) {
+                    setPrimsVisitedNodes([...primsVisitedNodes, smallestEdge.source])
+                }
+                if (!primsVisitedNodes.includes(smallestEdge.target)) {
+                    setPrimsVisitedNodes([...primsVisitedNodes, smallestEdge.target])
+                }
+
+
                 break;
             default:
                 break;
@@ -488,9 +526,16 @@ export function MinSpanningTreeScreen() {
         setHighlightEdges([])
         
         
-        if (selectedAlgorithm === 'Kruskal Algorithm') {
+        if (selectedAlgorithm === KRUSKAL_ALGORITHM) {
             
             createSmallestEdgesHeap()
+        }
+        if (selectedAlgorithm === PRIMS_ALGORITHM) {
+            // Set the first node as visited
+            setPrimsVisitedNodes([nodes[0].id])
+            setHighlightedIds([nodes[0].id])
+            createSmallestEdgesHeap()
+
         }
     }
 
@@ -645,9 +690,9 @@ Step 2: Pick the smallest edge. */}
                     <Row>
                         <Col>
                             <div className="algorithms">
-                                <Dropdown onSelect={async () => {
-                                    handleSelectAlgorithm();
-                                    resetAlgorithm()
+                                <Dropdown onSelect={async (event) => {
+                                    handleSelectAlgorithm(event);
+                                    // resetAlgorithm()
                                 }}>
                                     <Dropdown.Toggle variant="success" id="dropdown-basic">
                                         {selectedAlgorithm}
