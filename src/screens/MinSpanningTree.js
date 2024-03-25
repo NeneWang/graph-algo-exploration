@@ -447,8 +447,6 @@ export function MinSpanningTreeScreen() {
 
                 }
 
-                // Filter the edges that are connected to the visited nodes.
-                console.log("Neighboring Edges", validNeighboringEdges)
                 // Find the smallest edge that is not in the visited nodes.
                 // Sort the connected edges by value.
                 const sortedConnectedEdges = validNeighboringEdges.sort((a, b) => a.value - b.value);
