@@ -30,15 +30,6 @@ const simpleNodes = [
 ]
 
 const simpleEdges = [
-
-    // 0 -> 1: 4, 
-    // 0 -> 3, 6
-    // 0 -> 4, 6
-    // 0 -> 2, 4
-
-    // 1 -> 2, 2
-    // 2 -> 3, 8
-    // 3 -> 4, 9
     {
         id: '0->1',
         source: 'n0',
@@ -109,7 +100,7 @@ const examplesDatasets = [
 
     },
     {
-        name: 'IA. 21.4',
+        name: 'CLRS. 21.4',
         nodes: [
             {
                 id: 'a',
@@ -249,14 +240,112 @@ const examplesDatasets = [
                 value: 7
             }
         ]
-
-
     },
     {
-        name: 'Smaller'
-    },
-    {
-        name: 'Larger'
+        name: 'Cities',
+        
+        nodes: [
+            {
+                id: 'New York',
+                label: 'New York'
+            },
+            {
+                id: 'Los Angeles',
+                label: 'Los Angeles'
+            },
+            {
+                id: 'Chicago',
+                label: 'Chicago'
+            },
+            {
+                id: 'San Francisco',
+                label: 'San Francisco'
+            },
+            {
+                id: 'Houston',
+                label: 'Houston'
+            },
+            {
+                id: 'Miami',
+                label: 'Miami'
+            },
+            {
+                id: 'Seattle',
+                label: 'Seattle'
+            },
+        ],
+        edges: [
+            {
+                id: 'New York->Los Angeles',
+                source: 'New York',
+                target: 'Los Angeles',
+                label: '2789',
+                value: 2789
+            },
+            {
+                id: 'New York->Chicago',
+                source: 'New York',
+                target: 'Chicago',
+                label: '789',
+                value: 789
+            },
+            {
+                id: 'Los Angeles->Chicago',
+                source: 'Los Angeles',
+                target: 'Chicago',
+                label: '2015',
+                value: 2015
+            },
+            {
+                id: 'Los Angeles->San Francisco',
+                source: 'Los Angeles',
+                target: 'San Francisco',
+                label: '383',
+                value: 383
+            },
+            {
+                id: 'Chicago->Houston',
+                source: 'Chicago',
+                target: 'Houston',
+                label: '1085',
+                value: 1085
+            },
+            {
+                id: 'San Francisco->Seattle',
+                source: 'San Francisco',
+                target: 'Seattle',
+                label: '807',
+                value: 807
+            },
+            {
+                id: 'Houston->Miami',
+                source: 'Houston',
+                target: 'Miami',
+                label: '1420',
+                value: 1420
+            },
+            {
+                id: 'Miami->New York',
+                source: 'Miami',
+                target: 'New York',
+                label: '1300',
+                value: 1300
+            },
+            {
+                id: 'Seattle->Chicago',
+                source: 'Seattle',
+                target: 'Chicago',
+                label: '2065',
+                value: 2065
+            },
+            {
+                id: 'Houston->Los Angeles',
+                source: 'Houston',
+                target: 'Los Angeles',
+                label: '1543',
+                value: 1543
+            }
+        ],
     }
 ]
 
@@ -317,8 +406,7 @@ export function MinSpanningTreeScreen() {
     const [isAlgorithmFinished, setIsAlgorithmFinished] = useState(false)
     const [speed, setSpeed] = useState(3);
     const [key, setKey] = useState('Graph');
-    const [highlightedIds, setHighlightedIds] = useState([
-    ]);
+    const [highlightedIds, setHighlightedIds] = useState([]);
     const [highlightEdges, setHighlightEdges] = useState([]);
     const [minimumSpanningTreeEdges, setMinimumSpanningTreeEdges] = useState([])
 
@@ -327,12 +415,11 @@ export function MinSpanningTreeScreen() {
     const [isRunning, setIsRunning] = useState(false)
 
     const [intervalId, setIntervalId] = useState(null);
-
-
+    const [needsToReset, setNeedsToReset] = useState(false)
 
     const handleSelectAlgorithm = (event) => {
-        console.log("Selected Algorithm", event)
         setSelectedAlgorithm(event);
+        setNeedsToReset(true)
     };
 
     const handleSpeedChange = (event) => {
@@ -358,19 +445,16 @@ export function MinSpanningTreeScreen() {
      * @param {string} newExample Example selected.
      */
     const handleExampleChange = async (newExample) => {
-        console.log(
-            "Attempting to change example to:" + newExample
-
-        )
         const selectedDataset = examplesDatasets.find(
             (example) => example.name === newExample
         )
 
-        console.log("Selected Example", selectedDataset)
         setSelectedExample(selectedDataset)
         setNodes(selectedDataset.nodes)
         setEdges(selectedDataset.edges)
-        
+        console.log("SETS NEED TO RESE$T! Selected Example", needsToReset)
+        setNeedsToReset(true)
+        console.log("SETS NEED TO RESE$T! Selected Example", needsToReset)
 
     }
 
@@ -389,6 +473,12 @@ export function MinSpanningTreeScreen() {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const stepAlgorithm = useCallback(async () => {
+        if(needsToReset){
+            console.log(" ============== Needs to reset ==============")
+            resetAlgorithm()
+            setNeedsToReset(false)
+            console.log(" ============== Reset ==============" + needsToReset)
+        }
         console.log("Step Algorithm", selectedAlgorithm, step)
         console.log("Nodes", nodes)
         switch (selectedAlgorithm) {
