@@ -5,8 +5,8 @@ visualizations for: Fleury's Algorithm, Connected Components, Topological Sort, 
 
 **Mandatory**
 
-- [ ] Kruskal's Algorthm
-- [ ] Prim's Algorithm
+- [x] Kruskal's Algorthm
+- [x] Prim's Algorithm
 - [ ] A* Search
 - [ ] Adversarial Search and Prunning
 
