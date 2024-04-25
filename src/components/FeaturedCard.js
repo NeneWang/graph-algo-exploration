@@ -12,7 +12,7 @@ export const FeatureCard = ({ imageSrc, title, description, tags }) => {
                 </Card.Text>
                 
                 {tags && tags.map((tag, index) => (
-                    <Badge key={index} bg="secondary" style={{marginRight: 10}}>
+                    <Badge key={index} bg="secondary" style={{marginRight: '1em'}}>
                         {tag}
                     </Badge>
                 ))}
