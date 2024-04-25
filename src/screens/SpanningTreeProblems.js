@@ -14,9 +14,11 @@ export function SpanningTreeProblems() {
     const CONNECTING_CITIES_STARTER = 'CONNECTING_CITIES_STARTER';
     const CONNECIING_CITIES_SOLUTION = 'CONNECIING_CITIES_SOLUTION';
     const code = {
+        // eslint-disable-next-line no-multi-str
         CONNECTING_CITIES_STARTER: "class Solution:\n\
     def minimumCost(self, n: int, connections: List[List[int]]) -> int:\n\
         ",
+        // eslint-disable-next-line no-multi-str
         CONNECIING_CITIES_SOLUTION: "class UnionFind:\n\
         \n\
             def __init__(self, n: int):\n\
