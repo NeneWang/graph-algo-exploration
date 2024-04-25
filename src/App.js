@@ -23,7 +23,7 @@ function App() {
   return (
     <div className="App">
         <NavBarHeader className="clickeable" />
-        <Container fluid className='mx-auto col-md-8'>
+        <Container fluid className='mx-auto col-md-10'>
           <Routes>
             <Route path="/" element={<BasicScreen />} />
             <Route path="/context" element={<ContextScreen />} />

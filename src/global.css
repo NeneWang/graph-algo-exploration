@@ -25,3 +25,22 @@
 .controls{
   margin-top: 27em;
 }
+
+
+.centered-title-card{
+  text-align: center;
+  border: none;
+  /* Remove underline */
+}
+
+.feature-card{
+  margin-top: 2em;
+  margin-bottom: 2em;
+  border: none !important;
+  max-width: '10rem' !important;
+}
+
+
+ a{
+  text-decoration: none!important;
+}
