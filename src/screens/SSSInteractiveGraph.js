@@ -3,7 +3,7 @@ import { GraphCanvas } from 'reagraph';
 import { Dropdown, Tabs, Row, Col, Button, Form } from 'react-bootstrap';
 
 
-const PRIMS_ALGORITHM = 'Prim Algorithm';
+const DIJIKSTRA_ALGORITHM = 'Dijikstra Algorithm';
 
 const simpleNodes = [
     {
@@ -82,8 +82,8 @@ const simpleEdges = [
 
 const algorithms = [
     {
-        name: PRIMS_ALGORITHM,
-        description: PRIMS_ALGORITHM
+        name: DIJIKSTRA_ALGORITHM,
+        description: DIJIKSTRA_ALGORITHM
     },
 ]
 
@@ -363,9 +363,7 @@ export function SingleShortestPathInteractive() {
 
     const [isAlgorithmFinished, setIsAlgorithmFinished] = useState(false)
     const [speed, setSpeed] = useState(3);
-    const [key, setKey] = useState('Graph');
     const [highlightedIds, setHighlightedIds] = useState([]);
-    const [minimumSpanningTreeEdges, setMinimumSpanningTreeEdges] = useState([])
 
     const [isRunning, setIsRunning] = useState(false)
 
@@ -387,7 +385,7 @@ export function SingleShortestPathInteractive() {
 
         setStep(0)
         switch (selectedAlgorithm) {
-            case PRIMS_ALGORITHM:
+            case DIJIKSTRA_ALGORITHM:
                 const precomputedSteps = preComputeDijkstra(nodes, edges)
                 console.log("Precomputed Steps", precomputedSteps)
                 setHistory(precomputedSteps)
@@ -601,6 +599,7 @@ export function SingleShortestPathInteractive() {
 
     useEffect(() => {
         precalculateAlgorithmSteps()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
 
