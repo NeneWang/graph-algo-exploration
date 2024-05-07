@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Tabs, Tab } from 'react-bootstrap';
-import {SingleShortestPathInteractive} from './SSSInteractiveGraph';
+// import {SingleShortestPathInteractive} from './SSSInteractiveGraph';
+import { AdversarialInteractiveGraph } from './AdversarialInteractiveGraph';
 // import { SpanningTreeAbout } from './SpanningTreeAbout';
 // import { SpanningTreeProblems } from './SpanningTreeProblems';
 
-export function SingleShortesPathScreen() {
+export function AdversarialSearchScreen() {
 
     const [key, setKey] = useState('interactive-graph');
 
@@ -23,7 +24,7 @@ export function SingleShortesPathScreen() {
                     </Tabs>
                 </div>
                 {/* Show if tab ==  */}
-                {key === 'interactive-graph' && <SingleShortestPathInteractive />}
+                {key === 'interactive-graph' && <AdversarialInteractiveGraph />}
                 {/* {key === 'about' && <SpanningTreeAbout />}
                 {key === 'problems' && <SpanningTreeProblems />} */}
 
