@@ -30,7 +30,262 @@ Structure
 
 This is ideal because we can go to the past as well. And things can be precalculated at the start.
 
-## For Single Source Shortest Path
+    The key steps (After) abstracting the logic into history records can be seen that the clear ones are when 
+
+    - reset algorithm
+    - precalculateAlgorithmSteps
+## For Single Source Shortest Path here a general js.
+
+
+```js
+import React from 'react'
+
+    function getEdgesTrace(neighborNode, edges, currentNode, distData, nodes) {
+        let currentTraceNode = neighborNode;
+        const currentEdge = edges.find(e => e.source === currentNode.id && e.target === neighborNode.id);
+        const trace = [];
+        const traceEdges = [];
+        while (currentTraceNode) {
+            trace.push(currentTraceNode.id);
+            const previousVertex = distData[currentTraceNode.id].previousVertex;
+            if (previousVertex) {
+                // eslint-disable-next-line no-loop-func
+                let edge = edges.find(e => e.source === previousVertex && e.target === currentTraceNode.id);
+
+                if (edge) {
+                    traceEdges.push(edge);
+                }
+                currentTraceNode = nodes.find(node => node.id === previousVertex);
+            } else {
+                currentTraceNode = null;
+            }
+        }
+        return { traceEdges, currentEdge };
+    }
+
+function GraphVisualizer(precalculateAlgorithmSteps, resetAlgorithm, history) {
+
+    
+    const [step, setStep] = useState(0)
+    const [nodes, setNodes] = useState(simpleNodes)
+    const [edges, setEdges] = useState(simpleEdges)
+    const [isLoop, setIsLoop] = useState(false)
+
+    const [isAlgorithmFinished, setIsAlgorithmFinished] = useState(false)
+    const [speed, setSpeed] = useState(3);
+    const [highlightedIds, setHighlightedIds] = useState([]);
+
+    const [isRunning, setIsRunning] = useState(false)
+
+    const [intervalId, setIntervalId] = useState(null);
+    const [needsToReset, setNeedsToReset] = useState(false)
+
+    const handleSelectAlgorithm = (event) => {
+        setSelectedAlgorithm(event);
+        setNeedsToReset(true)
+    };
+
+    const handleSpeedChange = (event) => {
+        setSpeed(event.target.value);
+    };
+
+    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const nextStepAlgorithm = useCallback(async () => {
+        if (needsToReset) {
+            precalculateAlgorithmSteps()
+            setNeedsToReset(false)
+            
+        }
+        if (step >= history.length) {
+            handleFinishAlgorithm()
+            return;
+        }
+        displayAlgorithmStep()
+
+        setStep(step + 1)
+
+    })
+
+    const prevStepAlgorithm = () => {
+        if (step <= 0) {
+            return;
+        }
+        setStep(step - 1)
+        displayAlgorithmStep()
+    }
+
+    const displayAlgorithmStep = () => {
+        if (step >= history.length) {
+            handleFinishAlgorithm()
+            return;
+        }
+        const currentStep = history[step]
+        setHighlightedIds([...currentStep.highlighted_nodes, ...currentStep.highlighted_edges])
+        
+    }
+
+    const resetAlgorithm = () => {
+        setStep(0)
+        setHighlightedIds([])
+        setIsAlgorithmFinished(false)
+        precalculateAlgorithmSteps()
+        // displayAlgorithmStep()
+    }
+
+    useEffect(() => {
+        precalculateAlgorithmSteps()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
+
+    
+    const stepAlgorithmRef = useRef(nextStepAlgorithm);
+
+    useEffect(() => {
+        stepAlgorithmRef.current = nextStepAlgorithm;
+    }, [nextStepAlgorithm]);
+
+    const startAlgorithm = () => {
+        setIsRunning(true);
+        const id = setInterval(() => stepAlgorithmRef.current(), 2000 / speed); // speed is in seconds
+        setIntervalId(id);
+    };
+
+    const stopAlgorithm = () => {
+        setIsRunning(false);
+        clearInterval(intervalId);
+    };
+
+    const toggleLoop = () => {
+        setIsLoop(!isLoop);
+    }
+
+    /**
+     * 
+     * @param {string} newExample Example selected.
+     */
+    const handleExampleChange = async (newExample) => {
+        const selectedDataset = examplesDatasets.find(
+            (example) => example.name === newExample
+        )
+
+        setSelectedExample(selectedDataset)
+        setNodes(selectedDataset.nodes)
+        setEdges(selectedDataset.edges)
+        setNeedsToReset(true)
+
+    }
+
+
+  return (
+    <
+                <div className="visualizationsProblems">
+                    <Tabs>
+                    </Tabs>
+                </div>
+                <div style={{ position: "absolute", width: '90%', height: '25em' }}>
+                    <GraphCanvas
+                        actives={highlightedIds}
+                        edgeArrowPosition="none" edgeLabelPosition="above" labelType="all" nodes={nodes} edges={edges} contextMenu={({
+                            data,
+                            onClose
+                        }) => <div style={{
+                            background: 'white',
+                            width: 150,
+                            border: 'solid 1px blue',
+                            borderRadius: 2,
+                            padding: 5,
+                            textAlign: 'center'
+                        }}>
+                                <h1>{data.label}</h1>
+                                <button onClick={onClose}>Close Menu</button>
+                            </div>} />
+                </div>
+
+
+                <div className="controls">
+
+                    <Row>
+                        <Col>
+                            Speed: {speed}x
+                            <Form.Control
+                                type="range"
+                                min="1"
+                                max="10"
+                                step="1"
+                                value={speed}
+                                onChange={handleSpeedChange}
+                            />
+                        </Col>
+
+                        <Col >
+                            Step: {step}
+                            {isAlgorithmFinished &&
+                                <span> - Finished</span>}
+                            <br />
+
+                            <Button onClick={isRunning ? stopAlgorithm : startAlgorithm}>
+                                {isRunning ? 'Stop' : 'Start'}
+                            </Button>
+                            <Button onClick={() => nextStepAlgorithm()} >Step</Button>
+                            <Button onClick={() => prevStepAlgorithm()} >Prev</Button>
+                            <Button onClick={() => resetAlgorithm()}  >Reset</Button>
+                            <Button onClick={() => toggleLoop()} >{isLoop ? 'Is Loop' : 'No Loop'}</Button>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col>
+                            <div className="algorithms">
+                                <Dropdown onSelect={async (event) => {
+                                    handleSelectAlgorithm(event);
+                                    // resetAlgorithm()
+                                }}>
+                                    <Dropdown.Toggle variant="success" id="dropdown-basic">
+                                        {selectedAlgorithm}
+                                    </Dropdown.Toggle>
+
+                                    <Dropdown.Menu>
+                                        {algorithms.map((algorithm, index) => (
+                                            <Dropdown.Item key={index} eventKey={algorithm.name}>{algorithm.name}</Dropdown.Item>
+                                        ))}
+                                    </Dropdown.Menu>
+                                </Dropdown>
+                            </div>
+                        </Col>
+
+                        <Col>
+                            <div className="examples">
+                                <Dropdown onSelect={(event) => handleExampleChange(event)}>
+                                    <Dropdown.Toggle variant="success" id="dropdown-basic">
+                                        {selectedExample.name}
+                                    </Dropdown.Toggle>
+
+                                    <Dropdown.Menu>
+                                        {examplesDatasets.map((example, index) => (
+                                            <Dropdown.Item key={index} eventKey={example.name}>{example.name}</Dropdown.Item>
+                                        ))}
+                                    </Dropdown.Menu>
+                                </Dropdown>
+                            </div>
+                        </Col>
+                    </Row>
+                    <br />
+                    <small className="text-muted">&copy; 2024</small>
+                    <br />
+                </div>
+
+            </div>
+  )
+}
+
+export default GraphVisualizer
+
+
+
+
+```
+
 
 
 ### Dikiistra's Algorithm
@@ -79,6 +334,7 @@ const simpleNodes = [
     },
     ...
 ]
+
 
 
 

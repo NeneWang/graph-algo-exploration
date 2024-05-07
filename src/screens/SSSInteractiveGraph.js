@@ -379,7 +379,8 @@ export function SingleShortestPathInteractive() {
         setSpeed(event.target.value);
     };
 
-    const precalculateAlgorithmSteps = () => {
+    // TODO KEEP Here
+    const precalculateAlgorithmSteps = ({verbose=true}={}) => {
         // To call when the dataset is changed, or the algorithm changes.
         // This will precalculate the steps for the algorithm.
 
@@ -387,7 +388,7 @@ export function SingleShortestPathInteractive() {
         switch (selectedAlgorithm) {
             case DIJIKSTRA_ALGORITHM:
                 const precomputedSteps = preComputeDijkstra(nodes, edges)
-                console.log("Precomputed Steps", precomputedSteps)
+                if (verbose) console.log("Precomputed Steps", precomputedSteps)
                 setHistory(precomputedSteps)
                 break;
             default:
@@ -397,7 +398,7 @@ export function SingleShortestPathInteractive() {
 
     const [history, setHistory] = useState([])
 
-
+    // TODO Keep here.
     /**
     
     nodes: {
@@ -416,7 +417,7 @@ export function SingleShortestPathInteractive() {
      * @param {list[nodesDict]} nodes 
      * @param {list[edgesDict]} edges 
     */
-    const preComputeDijkstra = (nodesIn, edgesIn, { verbose = true } = {}) => {
+    const preComputeDijkstra = (nodesIn, edgesIn, { verbose = false } = {}) => {
         let nodes = [...nodesIn];
         let edges = [...edgesIn]; // Use this for global edge data
         if (verbose) {
@@ -540,9 +541,7 @@ export function SingleShortestPathInteractive() {
         setSelectedExample(selectedDataset)
         setNodes(selectedDataset.nodes)
         setEdges(selectedDataset.edges)
-        console.log("SETS NEED TO RESE$T! Selected Example", needsToReset)
         setNeedsToReset(true)
-        console.log("SETS NEED TO RESE$T! Selected Example", needsToReset)
 
     }
 
@@ -553,6 +552,7 @@ export function SingleShortestPathInteractive() {
         if (isLoop) {
             resetAlgorithm()
 
+
         } else {
             // stopAlgorithm()
         }
@@ -561,6 +561,11 @@ export function SingleShortestPathInteractive() {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const nextStepAlgorithm = useCallback(async () => {
+        if (needsToReset) {
+            precalculateAlgorithmSteps()
+            setNeedsToReset(false)
+            
+        }
         if (step >= history.length) {
             handleFinishAlgorithm()
             return;
@@ -594,7 +599,7 @@ export function SingleShortestPathInteractive() {
         setHighlightedIds([])
         setIsAlgorithmFinished(false)
         precalculateAlgorithmSteps()
-        displayAlgorithmStep()
+        // displayAlgorithmStep()
     }
 
     useEffect(() => {
