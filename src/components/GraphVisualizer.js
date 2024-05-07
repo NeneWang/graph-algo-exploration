@@ -2,11 +2,8 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { GraphCanvas } from 'reagraph';
 import { Dropdown, Tabs, Row, Col, Button, Form } from 'react-bootstrap';
 
-function GraphVisualizer({ precalculateAlgorithmSteps, history, simpleNodes, simpleEdges, algorithms, examplesDatasets }) {
-  
+function GraphVisualizer({ precalculateAlgorithmSteps, history, initialDisplayNodes, initialDisplayEdges, algorithms, examplesDatasets }) {
 
-
-    
     const [selectedAlgorithm, setSelectedAlgorithm] = useState(
         algorithms[0].name
     )
@@ -16,8 +13,8 @@ function GraphVisualizer({ precalculateAlgorithmSteps, history, simpleNodes, sim
     )
 
     const [step, setStep] = useState(0)
-    const [nodes, setNodes] = useState(simpleNodes)
-    const [edges, setEdges] = useState(simpleEdges)
+    const [nodes, setNodes] = useState(initialDisplayNodes)
+    const [edges, setEdges] = useState(initialDisplayEdges)
     const [isLoop, setIsLoop] = useState(false)
 
     const [isAlgorithmFinished, setIsAlgorithmFinished] = useState(false)
@@ -42,7 +39,8 @@ function GraphVisualizer({ precalculateAlgorithmSteps, history, simpleNodes, sim
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const nextStepAlgorithm = useCallback(async () => {
         if (needsToReset) {
-            precalculateAlgorithmSteps()
+            setStep(0)
+            precalculateAlgorithmSteps(selectedAlgorithm, nodes, edges)
             setNeedsToReset(false)
 
         }
@@ -92,12 +90,13 @@ function GraphVisualizer({ precalculateAlgorithmSteps, history, simpleNodes, sim
         setStep(0)
         setHighlightedIds([])
         setIsAlgorithmFinished(false)
-        precalculateAlgorithmSteps()
+        precalculateAlgorithmSteps( selectedAlgorithm, nodes, edges)
         // displayAlgorithmStep()
     }
 
     useEffect(() => {
-        precalculateAlgorithmSteps()
+        setStep(0)
+        precalculateAlgorithmSteps(selectedAlgorithm, nodes, edges)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
