@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { GraphCanvas } from 'reagraph';
 import { Dropdown, Tabs, Row, Col, Button, Form } from 'react-bootstrap';
 
-function GraphVisualizer({ precalculateAlgorithmSteps, history, initialDisplayNodes, initialDisplayEdges, algorithms, examplesDatasets }) {
+function GraphVisualizer({  algorithms, examplesDatasets, directed=true }) {
 
     const [selectedAlgorithm, setSelectedAlgorithm] = useState(
         algorithms[0].name
@@ -13,8 +13,8 @@ function GraphVisualizer({ precalculateAlgorithmSteps, history, initialDisplayNo
     )
 
     const [step, setStep] = useState(0)
-    const [nodes, setNodes] = useState(initialDisplayNodes)
-    const [edges, setEdges] = useState(initialDisplayEdges)
+    const [nodes, setNodes] = useState(examplesDatasets[0].nodes)
+    const [edges, setEdges] = useState(examplesDatasets[0].edges)
     const [isLoop, setIsLoop] = useState(false)
 
     const [isAlgorithmFinished, setIsAlgorithmFinished] = useState(false)
@@ -25,6 +25,9 @@ function GraphVisualizer({ precalculateAlgorithmSteps, history, initialDisplayNo
 
     const [intervalId, setIntervalId] = useState(null);
     const [needsToReset, setNeedsToReset] = useState(false)
+    
+
+    const [history, setHistory] = useState([])
 
     const handleSelectAlgorithm = (event) => {
         setSelectedAlgorithm(event);
@@ -75,6 +78,20 @@ function GraphVisualizer({ precalculateAlgorithmSteps, history, initialDisplayNo
         setStep(step - 1)
         displayAlgorithmStep()
     }
+
+    
+    const precalculateAlgorithmSteps = (selectedAlgorithm, nodes, edges, { verbose = false } = {}) => {
+        // To call when the dataset is changed, or the algorithm changes.
+        // This will precalculate the steps for the algorithm.
+        if (selectedAlgorithm) {
+            const algorithm = algorithms.find(algo => algo.name === selectedAlgorithm);
+            if (algorithm) {
+                const history = algorithm.preCalculate(nodes, edges, { verbose });
+                setHistory(history)
+            }
+        }
+    }
+
 
     const displayAlgorithmStep = () => {
         if (step >= history.length) {
@@ -149,6 +166,7 @@ function GraphVisualizer({ precalculateAlgorithmSteps, history, initialDisplayNo
             <div style={{ position: "absolute", width: '90%', height: '25em' }}>
                 <GraphCanvas
                     actives={highlightedIds}
+                    layoutType="forceDirected2d"
                     edgeArrowPosition="none" edgeLabelPosition="above" labelType="all" nodes={nodes} edges={edges} contextMenu={({
                         data,
                         onClose
