@@ -14,7 +14,7 @@ const BELLMAN_FORD_ALGORITHM = 'Bellman Ford Algorithm';
     },
 
     edgesDict: {
-        id: '0=>1',
+        id: '0->1',
         source: 'n0',
         target: 'n1',
         label: '4',
@@ -99,7 +99,10 @@ const BELLMAN_FORD_ALGORITHM = 'Bellman Ford Algorithm';
             dist: { ...dist },
             queue: []
         });
-
+        if (verbose) {
+            // show distances and predecessors as a console.table.
+            console.table(history)
+        }
         return  history
     
     }
@@ -205,7 +208,6 @@ const algorithms = [
 const examplesDatasets = [
     {
         name: "Dijikstra Path Sample",
-        isDirected: false,
         nodes: [
             {
                 id: 'a',
@@ -283,8 +285,6 @@ const examplesDatasets = [
     },
     {
         name: "CLRS Figure 22.6",
-        
-        isDirected: true,
         nodes: [
             {
                 id: 's',
@@ -309,69 +309,69 @@ const examplesDatasets = [
         ],
         edges: [
             {
-                id: 's=>t',
+                id: 's->t',
                 source: 's',
                 target: 't',
                 label: '10',
                 value: 10
             },
             {
-                id: 's=>y',
+                id: 's->y',
                 source: 's',
                 target: 'y',
                 label: '5',
             },
             {
-                id: 't=>x',
+                id: 't->x',
                 source: 't',
                 target: 'x',
                 label: '1',
                 value: 1
             },
             {
-                id: 't=>y',
+                id: 't->y',
                 source: 't',
                 target: 'y',
                 label: '2',
                 value: 2
             },
             {
-                id: 'x=>z',
+                id: 'x->z',
                 source: 'x',
                 target: 'z',
                 label: '4',
                 value: 4
             },
             {
-                id: 'y=>t',
+                id: 'y->t',
                 source: 'y',
                 target: 't',
                 label: '3',
                 value: 3
             },
             {
-                id: 'y=>x',
+                id: 'y->x',
                 source: 'y',
                 target: 'x',
                 label: '9',
                 value: 9
             },
             {
-                id: 'y=>z',
+                id: 'y->z',
                 source: 'y',
                 target: 'z',
                 label: '2',
                 value: 2
             },
             {
-                id: 'z=>s',
+                id: 'z->s',
                 source: 'z',
                 target: 's',
                 label: '7',
                 value: 7
             },
             {
-                id: 'z=>x',
+                id: 'z->x',
                 source: 'z',
                 target: 'x',
                 label: '6',
@@ -384,7 +384,7 @@ const examplesDatasets = [
 
 
 
-export function SingleShortestPathInteractive() {
+export function AdversarialInteractiveGraph() {
     return (
         <>
             <GraphVisualizer 

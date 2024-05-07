@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { GraphCanvas } from 'reagraph';
 import { Dropdown, Tabs, Row, Col, Button, Form } from 'react-bootstrap';
 
-function GraphVisualizer({  algorithms, examplesDatasets, directed=true }) {
+function GraphVisualizer({  algorithms, examplesDatasets }) {
 
     const [selectedAlgorithm, setSelectedAlgorithm] = useState(
         algorithms[0].name
@@ -25,6 +25,7 @@ function GraphVisualizer({  algorithms, examplesDatasets, directed=true }) {
 
     const [intervalId, setIntervalId] = useState(null);
     const [needsToReset, setNeedsToReset] = useState(false)
+    const [isDirected, setIsDirected] = useState(true)
     
 
     const [history, setHistory] = useState([])
@@ -80,26 +81,29 @@ function GraphVisualizer({  algorithms, examplesDatasets, directed=true }) {
     }
 
     
-    const precalculateAlgorithmSteps = (selectedAlgorithm, nodes, edges, { verbose = false } = {}) => {
+    const precalculateAlgorithmSteps = (selectedAlgorithm, nodes, edges, { verbose = true } = {}) => {
         // To call when the dataset is changed, or the algorithm changes.
         // This will precalculate the steps for the algorithm.
         if (selectedAlgorithm) {
             const algorithm = algorithms.find(algo => algo.name === selectedAlgorithm);
             if (algorithm) {
                 const history = algorithm.preCalculate(nodes, edges, { verbose });
+                if(verbose) console.table(history)
                 setHistory(history)
             }
         }
     }
 
 
-    const displayAlgorithmStep = () => {
+    const displayAlgorithmStep = ({verbose=true}={}) => {
         if (step >= history.length) {
             handleFinishAlgorithm()
             return;
         }
         const currentStep = history[step]
-        setHighlightedIds([...currentStep.highlighted_nodes, ...currentStep.highlighted_edges])
+        const toDisplay = [...currentStep.highlighted_nodes, ...currentStep.highlighted_edges]
+        if(verbose) console.table(toDisplay)
+        setHighlightedIds(toDisplay)
 
     }
 
@@ -107,13 +111,14 @@ function GraphVisualizer({  algorithms, examplesDatasets, directed=true }) {
         setStep(0)
         setHighlightedIds([])
         setIsAlgorithmFinished(false)
+        setIsDirected(selectedExample?.isDirected??false)
+        console.log(selectedExample, 'isDirected')
         precalculateAlgorithmSteps( selectedAlgorithm, nodes, edges)
         // displayAlgorithmStep()
     }
 
     useEffect(() => {
-        setStep(0)
-        precalculateAlgorithmSteps(selectedAlgorithm, nodes, edges)
+        resetAlgorithm()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -153,10 +158,12 @@ function GraphVisualizer({  algorithms, examplesDatasets, directed=true }) {
         setNodes(selectedDataset.nodes)
         setEdges(selectedDataset.edges)
         setNeedsToReset(true)
+        resetAlgorithm()
 
     }
 
 
+    const conditionalProps = isDirected ? {} : { edgeArrowPosition: "none" }
     return (
         <div>
             <div className="visualizationsProblems">
@@ -166,18 +173,11 @@ function GraphVisualizer({  algorithms, examplesDatasets, directed=true }) {
             <div style={{ position: "absolute", width: '90%', height: '25em' }}>
                 <GraphCanvas
                     actives={highlightedIds}
-                    layoutType="forceDirected2d"
-                    edgeArrowPosition="none" edgeLabelPosition="above" labelType="all" nodes={nodes} edges={edges} contextMenu={({
+                    {...conditionalProps}
+                    edgeLabelPosition="above" labelType="all" nodes={nodes} edges={edges} contextMenu={({
                         data,
                         onClose
-                    }) => <div style={{
-                        background: 'white',
-                        width: 150,
-                        border: 'solid 1px blue',
-                        borderRadius: 2,
-                        padding: 5,
-                        textAlign: 'center'
-                    }}>
+                    }) => <div>
                             <h1>{data.label}</h1>
                             <button onClick={onClose}>Close Menu</button>
                         </div>} />
