@@ -36,7 +36,7 @@ This is ideal because we can go to the past as well. And things can be precalcul
 ### Dikiistra's Algorithm
 
 1. Initialize the following variables:
-    a. `distData: List[{shortestDistance, previosVertex}]`: an array with shortest distance found so far together with the previous vertex that leads to the shortest path.
+    a. `distData: Dict[{shortestDistance, previosVertex}]`: an array with shortest distance found so far together with the previous vertex that leads to the shortest path.
     b. `visited[]`: a boolean array to keep track of visited vertices, initialized to false for all vertices.
     c. `priorityQueue`: a priority queue to store the vertices with their corresponding distances from the source.
 
@@ -61,11 +61,51 @@ This is ideal because we can go to the past as well. And things can be precalcul
 6. Pseudocode should also include the initialization of the `dist[]` array and the priority queue.
 
 
+- Lets first create the code generator for each. (which should occur on start.)
+- Once this can be done we can already prepopulate others using this idea of an glrotihm that just records all the future and now actions.
 
 
-```python
+How `nodes` and `edges` are expected as:
+
+```js
+const simpleNodes = [
+    {
+        id: 'n0',
+        label: 'n0'
+    },
+    {
+        id: 'n1',
+        label: 'n1'
+    },
+    ...
+]
+
+
+
+const simpleEdges = [
+    {
+        id: '0->1',
+        source: 'n0',
+        target: 'n1',
+        label: '4',
+        value: 4
+    },
+    {
+        id: '0->3',
+        source: 'n0',
+        target: 'n3',
+        label: '6',
+        value: 6
+    },
+    ...
+]
 
 ```
+
+- Search for: `highlightedIds`
+
+
+HIghlighted edges doesnt seem to be working?
 
 ### Bellman Ford Algorithm
 

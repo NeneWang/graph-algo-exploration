@@ -3,8 +3,7 @@ import { GraphCanvas } from 'reagraph';
 import { Dropdown, Tabs, Row, Col, Button, Form } from 'react-bootstrap';
 
 
-const PRIMS_ALGORITHM = 'Prim Algorithm'
-const KRUSKAL_ALGORITHM = 'Kruskal Algorithm'
+const PRIMS_ALGORITHM = 'Prim Algorithm';
 
 const simpleNodes = [
     {
@@ -83,13 +82,9 @@ const simpleEdges = [
 
 const algorithms = [
     {
-        name: KRUSKAL_ALGORITHM,
-        description: KRUSKAL_ALGORITHM
-    },
-    {
         name: PRIMS_ALGORITHM,
         description: PRIMS_ALGORITHM
-    }
+    },
 ]
 
 const examplesDatasets = [
@@ -243,7 +238,7 @@ const examplesDatasets = [
     },
     {
         name: 'Cities',
-        
+
         nodes: [
             {
                 id: 'New York',
@@ -370,11 +365,8 @@ export function SingleShortestPathInteractive() {
     const [speed, setSpeed] = useState(3);
     const [key, setKey] = useState('Graph');
     const [highlightedIds, setHighlightedIds] = useState([]);
-    const [highlightEdges, setHighlightEdges] = useState([]);
     const [minimumSpanningTreeEdges, setMinimumSpanningTreeEdges] = useState([])
 
-    const [edgestStack, setEdgesStack] = useState([])
-    const [primsVisitedNodes, setPrimsVisitedNodes] = useState([]);
     const [isRunning, setIsRunning] = useState(false)
 
     const [intervalId, setIntervalId] = useState(null);
@@ -389,19 +381,154 @@ export function SingleShortestPathInteractive() {
         setSpeed(event.target.value);
     };
 
+    const precalculateAlgorithmSteps = () => {
+        // To call when the dataset is changed, or the algorithm changes.
+        // This will precalculate the steps for the algorithm.
 
-
-    const createSmallestEdgesHeap = () => {
-        // Create a copy of edges.
-        console.log("Selected Example", selectedExample)
-        const tempEdges = [...selectedExample.edges]
-        let tempEdgestStack = tempEdges.sort((a, b) => a.value - b.value)
-
-
-        setEdgesStack(tempEdgestStack)
-        console.log("Edges Stack", tempEdgestStack)
+        setStep(0)
+        switch (selectedAlgorithm) {
+            case PRIMS_ALGORITHM:
+                const precomputedSteps = preComputeDijkstra(nodes, edges)
+                console.log("Precomputed Steps", precomputedSteps)
+                setHistory(precomputedSteps)
+                break;
+            default:
+                break;
+        }
     }
-    const delay = ms => new Promise(res => setTimeout(res, ms));
+
+    const [history, setHistory] = useState([])
+
+
+    /**
+    
+    nodes: {
+        id: 'n0',
+        label: 'n0'
+    },
+
+    edgesDict: {
+        id: '0->1',
+        source: 'n0',
+        target: 'n1',
+        label: '4',
+        value: 4
+    },
+
+     * @param {list[nodesDict]} nodes 
+     * @param {list[edgesDict]} edges 
+    */
+    const preComputeDijkstra = (nodesIn, edgesIn, { verbose = true } = {}) => {
+        let nodes = [...nodesIn];
+        let edges = [...edgesIn]; // Use this for global edge data
+        if (verbose) {
+            console.log("Started with nodes", nodes);
+            console.log("Started with edges", edges);
+        }
+        if (nodes.length === 0 || edges.length === 0) {
+            return;
+        }
+    
+        const ComputeHistory = [];
+        let visited = [];
+        let priorityQueue = [];
+        let distData = {};
+    
+        // Initialize the priority queue
+        priorityQueue.push(nodes[0]);
+        visited.push(nodes[0].id);
+        distData[nodes[0].id] = { shortestDistance: 0, previousVertex: null };
+    
+        ComputeHistory.push({
+            step: ComputeHistory.length,
+            highlighted_nodes: [nodes[0].id],
+            highlighted_edges: [],
+            
+            algorithm: 'Dijkstra',
+            visited: [...visited],
+            distData: { ...distData },
+            priorityQueue: [...priorityQueue]
+        });
+
+
+        while (priorityQueue.length > 0) {
+            let currentNode = priorityQueue.shift();
+            let neighbors = edges.filter(edge => edge.source === currentNode.id);
+
+
+            visited.push(currentNode.id);
+            // Show in history this as a new step as well.
+            // Check for the traces of how it got there..
+            const { traceEdges, currentEdge } = getEdgesTrace(currentNode, edges, currentNode, distData, nodes);
+
+
+            ComputeHistory.push({
+                step: ComputeHistory.length,
+                highlighted_nodes: [...visited],
+                highlighted_edges: [...traceEdges.map(e => e.id), currentEdge?.id??currentNode ],
+
+                algorithm: 'Dijkstra',
+                visited: [...visited],
+                distData: { ...distData },
+                priorityQueue: [...priorityQueue]
+            });
+
+            for (let index = 0; index < neighbors.length; index++) {
+                const neighbor = neighbors[index];
+                const neighborNode = nodes.find(node => node.id === neighbor.target);
+                const currentDistance = distData[currentNode.id].shortestDistance + neighbor.value;
+                
+    
+                if (visited.includes(neighborNode.id)) {
+                    if (currentDistance < distData[neighborNode.id].shortestDistance) {
+                        distData[neighborNode.id].shortestDistance = currentDistance;
+                        distData[neighborNode.id].previousVertex = currentNode.id;
+                    }
+                } else {
+                    distData[neighborNode.id] = { shortestDistance: currentDistance, previousVertex: currentNode.id };
+                    priorityQueue.push(neighborNode);
+                    
+                }
+    
+                const { traceEdges, currentEdge } = getEdgesTrace(neighborNode, edges, currentNode, distData, nodes);
+    
+                ComputeHistory.push({
+                    step: ComputeHistory.length,
+                    highlighted_nodes: [...visited],
+                    highlighted_edges: [...traceEdges.map(e => e.id), currentEdge.id ],
+                    
+                    algorithm: 'Dijkstra',
+                    visited: [...visited],
+                    distData: { ...distData },
+                    priorityQueue: [...priorityQueue]
+                });
+            }
+        }
+    
+        // Show the final result of the algorithm of the most optimal edges.
+        let minimumSpanningTreeEdges = [];
+        for (const node in distData) {
+            if (distData[node].previousVertex) {
+                const edge = edges.find(e => e.source === distData[node].previousVertex && e.target === node);
+                minimumSpanningTreeEdges.push(edge);
+            }
+        }
+
+        ComputeHistory.push({
+            step: ComputeHistory.length,
+            highlighted_nodes: [...visited],
+            highlighted_edges: minimumSpanningTreeEdges.map(e => e.id),
+            
+            algorithm: 'Dijkstra',
+            visited: [...visited],
+            distData: { ...distData },
+            priorityQueue: [...priorityQueue]
+        });
+        
+
+        return ComputeHistory;
+    };
+    
 
     /**
      * 
@@ -429,30 +556,59 @@ export function SingleShortestPathInteractive() {
             resetAlgorithm()
 
         } else {
-            stopAlgorithm()
+            // stopAlgorithm()
         }
     }
 
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    const stepAlgorithm = useCallback(async () => {
+    const nextStepAlgorithm = useCallback(async () => {
+        if (step >= history.length) {
+            handleFinishAlgorithm()
+            return;
+        }
+        displayAlgorithmStep()
 
+        setStep(step + 1)
 
     })
 
+    const prevStepAlgorithm = () => {
+        if (step <= 0) {
+            return;
+        }
+        setStep(step - 1)
+        displayAlgorithmStep()
+    }
+
+    const displayAlgorithmStep = () => {
+        if (step >= history.length) {
+            handleFinishAlgorithm()
+            return;
+        }
+        const currentStep = history[step]
+        setHighlightedIds([...currentStep.highlighted_nodes, ...currentStep.highlighted_edges])
+        
+    }
+
     const resetAlgorithm = () => {
+        setStep(0)
+        setHighlightedIds([])
+        setIsAlgorithmFinished(false)
+        precalculateAlgorithmSteps()
+        displayAlgorithmStep()
     }
 
     useEffect(() => {
-        createSmallestEdgesHeap()
+        precalculateAlgorithmSteps()
     }, [])
 
 
-    const stepAlgorithmRef = useRef(stepAlgorithm);
+    const stepAlgorithmRef = useRef(nextStepAlgorithm);
 
     useEffect(() => {
-        stepAlgorithmRef.current = stepAlgorithm;
-    }, [stepAlgorithm]);
+        stepAlgorithmRef.current = nextStepAlgorithm;
+    }, [nextStepAlgorithm]);
 
     const startAlgorithm = () => {
         setIsRunning(true);
@@ -521,39 +677,12 @@ export function SingleShortestPathInteractive() {
                             <Button onClick={isRunning ? stopAlgorithm : startAlgorithm}>
                                 {isRunning ? 'Stop' : 'Start'}
                             </Button>
-                            <Button onClick={() => stepAlgorithm()} >Step</Button>
+                            <Button onClick={() => nextStepAlgorithm()} >Step</Button>
+                            <Button onClick={() => prevStepAlgorithm()} >Prev</Button>
                             <Button onClick={() => resetAlgorithm()}  >Reset</Button>
                             <Button onClick={() => toggleLoop()} >{isLoop ? 'Is Loop' : 'No Loop'}</Button>
                         </Col>
                     </Row>
-                    <hr />
-                    {minimumSpanningTreeEdges && minimumSpanningTreeEdges.length > 0 &&
-                        <Row>
-                            <br />
-                            {/* Show the Minimum Spanning Tree */}
-                            <h3>Minimum Spanning Tree</h3>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Edge</th>
-                                        <th>Weight</th>
-
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {minimumSpanningTreeEdges.map((edge, index) => (
-                                        <tr key={index}>
-                                            <td>{edge.id}</td>
-                                            <td>{edge.value}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-
-
-                        </Row>}
-
-                    <hr />
                     <Row>
                         <Col>
                             <div className="algorithms">
@@ -600,4 +729,27 @@ export function SingleShortestPathInteractive() {
 
         </>
     )
+
+    function getEdgesTrace(neighborNode, edges, currentNode, distData, nodes) {
+        let currentTraceNode = neighborNode;
+        const currentEdge = edges.find(e => e.source === currentNode.id && e.target === neighborNode.id);
+        const trace = [];
+        const traceEdges = [];
+        while (currentTraceNode) {
+            trace.push(currentTraceNode.id);
+            const previousVertex = distData[currentTraceNode.id].previousVertex;
+            if (previousVertex) {
+                // eslint-disable-next-line no-loop-func
+                let edge = edges.find(e => e.source === previousVertex && e.target === currentTraceNode.id);
+
+                if (edge) {
+                    traceEdges.push(edge);
+                }
+                currentTraceNode = nodes.find(node => node.id === previousVertex);
+            } else {
+                currentTraceNode = null;
+            }
+        }
+        return { traceEdges, currentEdge };
+    }
 }
