@@ -3,6 +3,8 @@ import { NavBarHeader } from './components/NavBarHeader';
 import { BasicScreen } from './screens/BasicScreen';
 import { ContextScreen } from './screens/ContextScreen';
 import { MinSpanningTreeScreen } from './screens/MinSpanningTree';
+import { SingleShortesPathScreen } from './screens/singleShortestPath';
+
 
 import './global.css';
 
@@ -28,6 +30,8 @@ function App() {
             <Route path="/" element={<BasicScreen />} />
             <Route path="/context" element={<ContextScreen />} />
             <Route path="/min-spanning-tree" element={<MinSpanningTreeScreen />} />
+            <Route path="/single-source-shortest-path" element={<SingleShortesPathScreen />} />
+
           </Routes>
         </Container>
     </div>
