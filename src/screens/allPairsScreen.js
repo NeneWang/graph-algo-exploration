@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Tabs, Tab } from 'react-bootstrap';
 // import {SingleShortestPathInteractive} from './SSSInteractiveGraph';
-import {allPairsInteractive} from './allPairsInteractive';
+import {AllPairsInteractive} from './allPairsInteractive';
 // import { SpanningTreeAbout } from './SpanningTreeAbout';
 // import { SpanningTreeProblems } from './SpanningTreeProblems';
 
@@ -28,7 +28,7 @@ export function AllPairsShortestPathScreen() {
                     </Tabs>
                 </div>
                 {/* Show if tab ==  */}
-                {key === 'interactive-graph' && <allPairsInteractive />}
+                {key === 'interactive-graph' && <AllPairsInteractive />}
                 {/* {key === 'about' && <SpanningTreeAbout />}
                 {key === 'problems' && <SpanningTreeProblems />} */}
 

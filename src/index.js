@@ -12,7 +12,7 @@ import {
 const router = createHashRouter([
   {
     path: "/*",
-    element: <App />,
+  element: <App />,
   }
 ]);
 

@@ -5,6 +5,7 @@ import { ContextScreen } from './screens/ContextScreen';
 import { MinSpanningTreeScreen } from './screens/MinSpanningTree';
 import { SingleShortesPathScreen } from './screens/singleShortestPath';
 import { AdversarialSearchScreen } from './screens/AdversarialSearch';
+import { AllPairsShortestPathScreen } from './screens/allPairsScreen';
 
 
 import './global.css';
@@ -33,6 +34,7 @@ function App() {
             <Route path="/min-spanning-tree" element={<MinSpanningTreeScreen />} />
             <Route path="/single-source-shortest-path" element={<SingleShortesPathScreen />} />
             <Route path="/adversarial-search" element={<AdversarialSearchScreen />} />
+            <Route path="/all-pairs-shortest-path" element={<AllPairsShortestPathScreen />} />
 
           </Routes>
         </Container>

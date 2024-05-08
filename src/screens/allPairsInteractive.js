@@ -1,9 +1,6 @@
-import React  from 'react';
+import React from 'react';
 import GraphVisualizer from '../components/GraphVisualizer';
 
-
-const DIJIKSTRA_ALGORITHM = 'Dijikstra Algorithm';
-const BELLMAN_FORD_ALGORITHM = 'Bellman Ford Algorithm';
 
 /**
  * All-Pairs Shortest Path with Floyd-Warshall Algorithm
@@ -39,6 +36,7 @@ function preComputeFloydWarshall(nodes, edges, { verbose = false } = {}) {
             highlighted_nodes: [source, target],
             highlighted_edges: [edge.id],
             dist: JSON.parse(JSON.stringify(dist)),
+            table: createTableData(),
         });
     });
 
@@ -60,11 +58,55 @@ function preComputeFloydWarshall(nodes, edges, { verbose = false } = {}) {
                         highlighted_nodes: [iId, kId, jId],
                         highlighted_edges: [],
                         dist: JSON.parse(JSON.stringify(dist)),
+                        table: createTableData(),
                     });
                 }
             });
         });
     });
+
+    function createTableData() {
+        // Add dist and next to tableData next to each other, with different names.
+        /** expected:
+         * {
+         *  '1_distance': { '1': 0, '2': 3, '3': 8, '4': 7, '5': -4 },
+         * '1_next': { '1': null, '2': '2', '3': '5', '4': '2', '5': '5' },
+         * '2_distance': { '1': 3, '2': 0, '3': 4, '4': 1, '5': -4 },
+         * ...
+         * }
+        */
+
+        
+        const tableData = {};
+
+        // Adding some space.
+        const space = '=========';
+        let distanceRow = []
+        nodes.forEach(i =>{
+            distanceRow.push(space)
+        });
+        tableData['= Distance ='] = distanceRow
+
+
+        nodes.forEach(i => {
+            const iId = i.id;
+            tableData[`${iId}_distance`] = dist[iId];
+        });
+        
+        // Adding some space.
+        let nextRow = []
+        nodes.forEach(i =>{
+            nextRow.push(space)
+        });
+        tableData['= Next ='] = nextRow
+
+        nodes.forEach(i => {
+            const iId = i.id;
+            tableData[`${iId}_next`] = next[iId];
+        });
+        return tableData;
+
+    }
 
     // Highlight the final paths
     const finalEdges = [];
@@ -74,6 +116,7 @@ function preComputeFloydWarshall(nodes, edges, { verbose = false } = {}) {
                 let current = i.id;
                 while (current !== j.id) {
                     const nextNode = next[current][j.id];
+                    // eslint-disable-next-line no-loop-func
                     const edge = edges.find(e => e.source === current && e.target === nextNode);
                     if (edge && !finalEdges.includes(edge.id)) {
                         finalEdges.push(edge.id);
@@ -89,11 +132,17 @@ function preComputeFloydWarshall(nodes, edges, { verbose = false } = {}) {
         highlighted_nodes: nodes.map(n => n.id),
         highlighted_edges: finalEdges,
         dist: JSON.parse(JSON.stringify(dist)),
+        table: createTableData(),
     });
 
     if (verbose) {
         console.log("Final shortest paths:", dist);
     }
+
+    // console.log('history')
+    // // console.table(history)
+    // console.log(dist)
+    // console.log(next)
 
     return history;
 }
@@ -201,7 +250,7 @@ const examplesDatasets = [
         ]
     },
     // 25.2
-    
+
     {
         name: "Dijikstra Path Sample",
         isDirected: false,
@@ -282,7 +331,7 @@ const examplesDatasets = [
     },
     {
         name: "CLRS Figure 22.6",
-        
+
         isDirected: true,
         nodes: [
             {
@@ -386,7 +435,7 @@ const examplesDatasets = [
 export function AllPairsInteractive() {
     return (
         <>
-            <GraphVisualizer 
+            <GraphVisualizer
                 algorithms={algorithms}
                 examplesDatasets={examplesDatasets}
             />
