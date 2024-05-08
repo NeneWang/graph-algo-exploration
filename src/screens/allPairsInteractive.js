@@ -78,33 +78,44 @@ function preComputeFloydWarshall(nodes, edges, { verbose = false } = {}) {
 
         
         const tableData = {};
+        const SPACE = '====';
+        // Adding some space.
+        let spaceRow = {}
+        nodes.forEach(i =>{
+            
+            const iId = i.id;
+            spaceRow[iId] = SPACE;
+        });
 
         // Adding some space.
-        const space = '=========';
-        let distanceRow = []
-        nodes.forEach(i =>{
-            distanceRow.push(space)
-        });
-        tableData['= Distance ='] = distanceRow
-
+        // const space = '=========';
+        // let distanceRow = []
+        // nodes.forEach(i =>{
+        //     distanceRow.push(space)
+        // });
+        tableData['= Distance ='] = spaceRow
 
         nodes.forEach(i => {
             const iId = i.id;
+            if (!tableData[`${iId}_distance`]) {
+                tableData[`${iId}_distance`] = {};
+            }
+
             tableData[`${iId}_distance`] = dist[iId];
         });
         
-        // Adding some space.
-        let nextRow = []
-        nodes.forEach(i =>{
-            nextRow.push(space)
-        });
-        tableData['= Next ='] = nextRow
+        tableData['= Next ='] = spaceRow
 
         nodes.forEach(i => {
+        
             const iId = i.id;
+            if (!tableData[`${iId}_next`]) {
+                tableData[`${iId}_next`] = {};
+            }
             tableData[`${iId}_next`] = next[iId];
         });
-        return tableData;
+        // console.log(tableData)
+        return JSON.parse(JSON.stringify(tableData));
 
     }
 
