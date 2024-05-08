@@ -62,11 +62,13 @@ const BELLMAN_FORD_ALGORITHM = 'Bellman Ford Algorithm';
                 // Get the path from the source to the target
                 const prevNode = prev[node['id']];
                 
+                // eslint-disable-next-line eqeqeq
                 if ( node['id'] == undefined || prevNode === null){
                     break;
                 }
 
                 // Ge the edge.
+                // eslint-disable-next-line no-loop-func
                 const edge = edges.find(e => e.source === prevNode && e.target === node['id']);
                 path.push(edge['id']);
                 // path.push(node['id']);

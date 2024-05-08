@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { GraphCanvas } from 'reagraph';
 import { Dropdown, Tabs, Row, Col, Button, Form } from 'react-bootstrap';
+import TableDisplayer from './TableDisplayer';
 
 function GraphVisualizer({  algorithms, examplesDatasets }) {
 
@@ -26,6 +27,7 @@ function GraphVisualizer({  algorithms, examplesDatasets }) {
     const [intervalId, setIntervalId] = useState(null);
     const [needsToReset, setNeedsToReset] = useState(false)
     const [isDirected, setIsDirected] = useState(true)
+    const [tableData, setTableData] = useState({})
     
 
     const [history, setHistory] = useState([])
@@ -106,6 +108,8 @@ function GraphVisualizer({  algorithms, examplesDatasets }) {
             // console.table(toDisplay)
             const table = currentStep?.table??{}
             console.table(table)
+            // console.log(table)
+            setTableData(table)
         }
         setHighlightedIds(toDisplay)
 
@@ -168,6 +172,8 @@ function GraphVisualizer({  algorithms, examplesDatasets }) {
 
 
     const conditionalProps = isDirected ? {} : { edgeArrowPosition: "none" }
+
+
     return (
         <div>
             <div className="visualizationsProblems">
@@ -253,6 +259,11 @@ function GraphVisualizer({  algorithms, examplesDatasets }) {
                                 </Dropdown.Menu>
                             </Dropdown>
                         </div>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <TableDisplayer tableData={tableData} />
                     </Col>
                 </Row>
                 <br />
