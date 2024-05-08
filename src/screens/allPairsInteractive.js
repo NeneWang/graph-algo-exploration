@@ -5,201 +5,106 @@ import GraphVisualizer from '../components/GraphVisualizer';
 const DIJIKSTRA_ALGORITHM = 'Dijikstra Algorithm';
 const BELLMAN_FORD_ALGORITHM = 'Bellman Ford Algorithm';
 
+/**
+ * All-Pairs Shortest Path with Floyd-Warshall Algorithm
+ *
+ * @param {Array} nodes - Array of node objects {id: 'node_id', label: 'node_label'}
+ * @param {Array} edges - Array of edge objects {id: 'edge_id', source: 'source_id', target: 'target_id', value: number}
+ * @param {Object} options - Contains the verbose parameter for logging
+ * @returns {Array} - Array of history objects detailing each computation step
+ */
+function preComputeFloydWarshall(nodes, edges, { verbose = false } = {}) {
+    const history = [];
+    const dist = {};
+    const next = {};
 
-    /**
-    
-    nodes: {
-        id: 'n0',
-        label: 'n0'
-    },
+    // Initialize distances with Infinity and set the diagonal to zero
+    nodes.forEach(node => {
+        dist[node.id] = {};
+        next[node.id] = {};
 
-    edgesDict: {
-        id: '0=>1',
-        source: 'n0',
-        target: 'n1',
-        label: '4',
-        value: 4
-    },
-
-     * @param {list[nodesDict]} nodes 
-     * @param {list[edgesDict]} edges 
-    */
-    const preComputeDijkstra = (nodes, edges, { verbose = true } = {}) => {
-        const dist = {};
-        const prev = {};
-        const visited = new Set();
-        const history = [];
-        const sourceId = nodes[0].id;
-
-        // Initialize distances and previous nodes
-        nodes.forEach(node => {
-            dist[node.id] = Infinity;
-            prev[node.id] = null;
+        nodes.forEach(innerNode => {
+            dist[node.id][innerNode.id] = node.id === innerNode.id ? 0 : Infinity;
+            next[node.id][innerNode.id] = null;
         });
-        dist[sourceId] = 0;
+    });
 
-        const priorityQueue = [{ id: sourceId, dist: 0 }];
-
-        // Record the initial state
+    // Add the direct distances from the edge list
+    edges.forEach(edge => {
+        const { source, target, value } = edge;
+        dist[source][target] = value;
+        next[source][target] = target;
         history.push({
             step: history.length,
-            highlighted_nodes: [sourceId],
-            highlighted_edges: [],
-            dist: { ...dist },
-            queue: priorityQueue.map(q => q.id)
+            highlighted_nodes: [source, target],
+            highlighted_edges: [edge.id],
+            dist: JSON.parse(JSON.stringify(dist)),
         });
+    });
 
-        while (priorityQueue.length > 0) {
-            priorityQueue.sort((a, b) => a.dist - b.dist);
-            const { id: u } = priorityQueue.shift();
-            visited.add(u);
+    // Apply Floyd-Warshall algorithm
+    nodes.forEach(k => {
+        const kId = k.id;
+        nodes.forEach(i => {
+            const iId = i.id;
+            nodes.forEach(j => {
+                const jId = j.id;
+                const newDist = dist[iId][kId] + dist[kId][jId];
 
-            // Record when a node is visited
-            if (verbose) {
-                console.log(`Visiting node: ${u}, Distance: ${dist[u]}`);
-            }
+                if (newDist < dist[iId][jId]) {
+                    dist[iId][jId] = newDist;
+                    next[iId][jId] = next[iId][kId];
 
-            edges.filter(edge => edge.source === u).forEach(edge => {
-                const { target: v, value } = edge;
-                if (!visited.has(v)) {
-                    const alt = dist[u] + value;
-                    if (alt < dist[v]) {
-                        dist[v] = alt;
-                        prev[v] = u;
-                        priorityQueue.push({ id: v, dist: alt });
-
-                        // Record each update
-                        history.push({
-                            step: history.length,
-                            highlighted_nodes: [u, v],
-                            highlighted_edges: [edge.id],
-                            dist: { ...dist },
-                            queue: priorityQueue.map(q => q.id)
-                        });
-                    }
-                }
-            });
-        }
-
-        // Record the final shortest paths using edges
-        const finalEdges = [];
-        for (const node in prev) {
-            if (prev[node]) {
-                const edge = edges.find(e => e.source === prev[node] && e.target === node);
-                if (edge) {
-                    finalEdges.push(edge.id);
-                }
-            }
-        }
-
-        history.push({
-            step: history.length,
-            highlighted_nodes: [...visited],
-            highlighted_edges: finalEdges,
-            dist: { ...dist },
-            queue: []
-        });
-
-        return  history
-    
-    }
-
-    /**
-     * 
-     * @param {list} nodes 
-     * @param {*} edges 
-     * @param {*} param3 
-     * @returns 
-     */
-    function preComputeBellmanFord(nodes, edges,  { verbose = false } = {}) {
-        const dist = {};
-        const prev = {};
-        const history = [];
-        
-        const sourceId = nodes[0].id;
-
-        // Initialize distances and predecessors
-        nodes.forEach(node => {
-            dist[node.id] = Infinity;
-            prev[node.id] = null;
-        });
-        dist[sourceId] = 0;
-    
-        history.push({
-            step: history.length,
-            highlighted_nodes: [sourceId],
-            highlighted_edges: [],
-            dist: { ...dist }
-        });
-    
-        // Relax edges repeatedly
-        for (let i = 1; i < nodes.length; i++) { // Repeat this |V| - 1 times
-            let changed = false; // To track any changes in this iteration
-            for (const edge of edges) {
-                const { source: u, target: v, value: w } = edge;
-                if (dist[u] + w < dist[v]) {
-                    dist[v] = dist[u] + w;
-                    prev[v] = u;
-                    changed = true;
-    
                     history.push({
                         step: history.length,
-                        highlighted_nodes: [u, v],
-                        highlighted_edges: [edge.id],
-                        dist: { ...dist }
+                        highlighted_nodes: [iId, kId, jId],
+                        highlighted_edges: [],
+                        dist: JSON.parse(JSON.stringify(dist)),
                     });
                 }
-            }
-            // If no changes occur, algorithm can terminate early
-            if (!changed) break;
-        }
-    
-        // Check for negative weight cycles
-        for (const edge of edges) {
-            const { source: u, target: v, value: w } = edge;
-            if (dist[u] + w < dist[v]) {
-                console.error("Graph contains a negative weight cycle");
-                return { hasNegativeCycle: true, history };
-            }
-        }
-    
-        // Prepare final step with all shortest paths
-        const finalEdges = [];
-        for (const node in prev) {
-            if (prev[node]) {
-                const edge = edges.find(e => e.source === prev[node] && e.target === node);
-                if (edge) {
-                    finalEdges.push(edge.id);
+            });
+        });
+    });
+
+    // Highlight the final paths
+    const finalEdges = [];
+    nodes.forEach(i => {
+        nodes.forEach(j => {
+            if (next[i.id][j.id] !== null) {
+                let current = i.id;
+                while (current !== j.id) {
+                    const nextNode = next[current][j.id];
+                    const edge = edges.find(e => e.source === current && e.target === nextNode);
+                    if (edge && !finalEdges.includes(edge.id)) {
+                        finalEdges.push(edge.id);
+                    }
+                    current = nextNode;
                 }
             }
-        }
-    
-        history.push({
-            step: history.length,
-            highlighted_nodes: Object.keys(dist),
-            highlighted_edges: finalEdges,
-            dist: { ...dist }
         });
-    
-        if (verbose) {
-            console.log("Final distances from source:", dist);
-            console.log("Predecessors in path:", prev);
-        }
-    
-        return history;
+    });
+
+    history.push({
+        step: history.length,
+        highlighted_nodes: nodes.map(n => n.id),
+        highlighted_edges: finalEdges,
+        dist: JSON.parse(JSON.stringify(dist)),
+    });
+
+    if (verbose) {
+        console.log("Final shortest paths:", dist);
     }
+
+    return history;
+}
+
 
 const algorithms = [
     {
-        name: DIJIKSTRA_ALGORITHM,
-        description: DIJIKSTRA_ALGORITHM,
-        preCalculate: preComputeDijkstra
+        name: "Floyd-Warshall Algorithm",
+        description: "ALL Pairs Interactive",
+        preCalculate: preComputeFloydWarshall
     },
-    {
-        name: BELLMAN_FORD_ALGORITHM,
-        description: BELLMAN_FORD_ALGORITHM,
-        preCalculate: preComputeBellmanFord
-    }
 ]
 
 const examplesDatasets = [
