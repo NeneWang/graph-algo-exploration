@@ -3,7 +3,7 @@ import { GraphCanvas } from 'reagraph';
 import { Dropdown, Tabs, Row, Col, Button, Form } from 'react-bootstrap';
 import TableDisplayer from './TableDisplayer';
 
-function GraphVisualizer({  algorithms, examplesDatasets }) {
+function GraphVisualizer({ algorithms, examplesDatasets }) {
 
     const [selectedAlgorithm, setSelectedAlgorithm] = useState(
         algorithms[0].name
@@ -28,7 +28,7 @@ function GraphVisualizer({  algorithms, examplesDatasets }) {
     const [needsToReset, setNeedsToReset] = useState(false)
     const [isDirected, setIsDirected] = useState(true)
     const [tableData, setTableData] = useState({})
-    
+
 
     const [history, setHistory] = useState([])
 
@@ -82,7 +82,7 @@ function GraphVisualizer({  algorithms, examplesDatasets }) {
         displayAlgorithmStep()
     }
 
-    
+
     const precalculateAlgorithmSteps = (selectedAlgorithm, nodes, edges, { verbose = true } = {}) => {
         // To call when the dataset is changed, or the algorithm changes.
         // This will precalculate the steps for the algorithm.
@@ -90,23 +90,23 @@ function GraphVisualizer({  algorithms, examplesDatasets }) {
             const algorithm = algorithms.find(algo => algo.name === selectedAlgorithm);
             if (algorithm) {
                 const history = algorithm.preCalculate(nodes, edges, { verbose });
-                if(verbose) console.table(history)
+                if (verbose) console.table(history)
                 setHistory(history)
             }
         }
     }
 
 
-    const displayAlgorithmStep = ({verbose=true}={}) => {
+    const displayAlgorithmStep = ({ verbose = true } = {}) => {
         if (step >= history.length) {
             handleFinishAlgorithm()
             return;
         }
         const currentStep = history[step]
         const toDisplay = [...currentStep.highlighted_nodes, ...currentStep.highlighted_edges]
-        if(verbose){
+        if (verbose) {
             // console.table(toDisplay)
-            const table = currentStep?.table??{}
+            const table = currentStep?.table ?? {}
             console.table(table)
             // console.log(table)
             setTableData(table)
@@ -119,9 +119,9 @@ function GraphVisualizer({  algorithms, examplesDatasets }) {
         setStep(0)
         setHighlightedIds([])
         setIsAlgorithmFinished(false)
-        setIsDirected(selectedExample?.isDirected??false)
+        setIsDirected(selectedExample?.isDirected ?? false)
         console.log(selectedExample, 'isDirected')
-        precalculateAlgorithmSteps( selectedAlgorithm, nodes, edges)
+        precalculateAlgorithmSteps(selectedAlgorithm, nodes, edges)
         // displayAlgorithmStep()
     }
 
@@ -182,7 +182,7 @@ function GraphVisualizer({  algorithms, examplesDatasets }) {
             </div>
             <div style={{ position: "absolute", width: '90%', height: '25em' }}>
                 <GraphCanvas
-                
+
                     actives={highlightedIds}
                     {...conditionalProps}
                     edgeLabelPosition="above" labelType="all" nodes={nodes} edges={edges} contextMenu={({
@@ -262,9 +262,7 @@ function GraphVisualizer({  algorithms, examplesDatasets }) {
                     </Col>
                 </Row>
                 <Row>
-                    <Col>
-                        <TableDisplayer tableData={tableData} />
-                    </Col>
+                    <TableDisplayer tableData={tableData} />
                 </Row>
                 <br />
                 <small className="text-muted">&copy; 2024</small>

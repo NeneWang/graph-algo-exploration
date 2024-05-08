@@ -405,7 +405,6 @@ export function SpanningInteractiveGraph() {
 
     const [isAlgorithmFinished, setIsAlgorithmFinished] = useState(false)
     const [speed, setSpeed] = useState(3);
-    const [key, setKey] = useState('Graph');
     const [highlightedIds, setHighlightedIds] = useState([]);
     const [highlightEdges, setHighlightEdges] = useState([]);
     const [minimumSpanningTreeEdges, setMinimumSpanningTreeEdges] = useState([])
@@ -596,6 +595,7 @@ export function SpanningInteractiveGraph() {
 
     useEffect(() => {
         createSmallestEdgesHeap()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
 
@@ -684,7 +684,7 @@ export function SpanningInteractiveGraph() {
                         {/* Step 1: Sort all edges in increasing order of their edge weights.
 Step 2: Pick the smallest edge. */}
                         {/* Create a table */}
-                        {(selectedAlgorithm == KRUSKAL_ALGORITHM) && edgestStack && edgestStack.length > 0 && (
+                        {(selectedAlgorithm === KRUSKAL_ALGORITHM) && edgestStack && edgestStack.length > 0 && (
                             <>
                                 Smallest Edges Heap
 
