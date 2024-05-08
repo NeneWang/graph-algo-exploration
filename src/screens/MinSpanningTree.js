@@ -11,6 +11,11 @@ export function MinSpanningTreeScreen() {
     return (
         <>
             <div>
+                
+            <h2>What is a Minimum Spanning Tree?</h2>
+                <p>
+                    A minimum spanning tree (MST) is a subset of the edges of a connected, edge-weighted undirected graph that connects all the vertices together, without any cycles and with the minimum possible total edge weight.
+                </p>
                 <div className="visualizationsProblems">
                     <Tabs
                         id="controlled-tab-example"

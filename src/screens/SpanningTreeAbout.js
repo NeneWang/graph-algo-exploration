@@ -13,10 +13,6 @@ export function SpanningTreeAbout() {
         <>
             <h1>About Minimum Spanning Tree</h1>
             <section>
-                <h2>What is a Minimum Spanning Tree?</h2>
-                <p>
-                    A minimum spanning tree (MST) is a subset of the edges of a connected, edge-weighted undirected graph that connects all the vertices together, without any cycles and with the minimum possible total edge weight.
-                </p>
             </section>
             <section>
                 <h2>Comparing MST Algorithms</h2>

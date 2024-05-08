@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
 import { Tabs, Tab } from 'react-bootstrap';
-import {SingleShortestPathInteractive} from './SSSInteractiveGraph';
+// import {SingleShortestPathInteractive} from './SSSInteractiveGraph';
+import {allPairsInteractive} from './allPairsInteractive';
 // import { SpanningTreeAbout } from './SpanningTreeAbout';
 // import { SpanningTreeProblems } from './SpanningTreeProblems';
 
-export function SingleShortesPathScreen() {
+export function AllPairsShortestPathScreen() {
 
     const [key, setKey] = useState('interactive-graph');
 
     return (
         <>
             <div>
-                <h1>Single Source Shortest Path</h1>
-                <p>
-                    Given a graph G D .V; E/, we want to find a shortest path from a given source vertex `s` inside `V` to each vertex in `V` .
-                </p>
+            <h1>All-Pairs Shortest Path Problem</h1>
+            <p>Given a graph with weighted edges as input, the All-Pairs Shortest Path Problem aims to find the shortest path between every pair of nodes. The expected output is a matrix where each entry represents the shortest distance between a pair of nodes.</p>
+
 
                 <div className="visualizationsProblems">
                     <Tabs
@@ -28,7 +28,7 @@ export function SingleShortesPathScreen() {
                     </Tabs>
                 </div>
                 {/* Show if tab ==  */}
-                {key === 'interactive-graph' && <SingleShortestPathInteractive />}
+                {key === 'interactive-graph' && <allPairsInteractive />}
                 {/* {key === 'about' && <SpanningTreeAbout />}
                 {key === 'problems' && <SpanningTreeProblems />} */}
 
