@@ -12,6 +12,9 @@ export function AdversarialSearchScreen() {
     return (
         <>
             <div>
+                <br />
+                <h3>Adversarial Search</h3>
+                <br />
                 <div className="visualizationsProblems">
                     <Tabs
                         id="controlled-tab-example"

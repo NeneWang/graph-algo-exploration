@@ -172,6 +172,7 @@ function GraphVisualizer({  algorithms, examplesDatasets }) {
             </div>
             <div style={{ position: "absolute", width: '90%', height: '25em' }}>
                 <GraphCanvas
+                
                     actives={highlightedIds}
                     {...conditionalProps}
                     edgeLabelPosition="above" labelType="all" nodes={nodes} edges={edges} contextMenu={({

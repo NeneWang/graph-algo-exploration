@@ -32,7 +32,7 @@ function App() {
             <Route path="/context" element={<ContextScreen />} />
             <Route path="/min-spanning-tree" element={<MinSpanningTreeScreen />} />
             <Route path="/single-source-shortest-path" element={<SingleShortesPathScreen />} />
-            <Route path="/adversarial-search" element={AdversarialSearchScreen} />
+            <Route path="/adversarial-search" element={<AdversarialSearchScreen />} />
 
           </Routes>
         </Container>
