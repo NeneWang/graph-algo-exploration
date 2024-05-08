@@ -1,4 +1,4 @@
-import React from 'react';
+import React  from 'react';
 import GraphVisualizer from '../components/GraphVisualizer';
 
 
@@ -6,168 +6,249 @@ const DIJIKSTRA_ALGORITHM = 'Dijikstra Algorithm';
 const BELLMAN_FORD_ALGORITHM = 'Bellman Ford Algorithm';
 
 
-/**
- * Adversarial Search with Alpha-Beta Pruning
- * 
- * @param {Array} nodes - Array of node objects {id: 'node_id', label: 'node_label'}
- * @param {Array} edges - Array of edge objects {id: 'edge_id', source: 'source_id', target: 'target_id', value: number}
- * @param {Object} options - Contains the verbose parameter for logging
- * @returns {Array} - Array of history objects detailing each computation step
- */
-function preComputeDijkstra(nodes, edges, { verbose = false } = {}) {
-    const history = [];
-    const nodeValues = nodes.reduce((acc, node) => ({ ...acc, [node.id]: node.value }), {});
+    /**
+    
+    nodes: {
+        id: 'n0',
+        label: 'n0'
+    },
 
-    function alphaBeta(nodeId, alpha, beta, maximizingPlayer, parentEdge = null) {
-        const nodeEdges = edges.filter(edge => edge.source === nodeId);
-        let value;
+    edgesDict: {
+        id: '0=>1',
+        source: 'n0',
+        target: 'n1',
+        label: '4',
+        value: 4
+    },
 
-        if (!nodeEdges.length) { // Assume leaf node
-            value = nodeValues[nodeId];
-            recordHistory(nodeId, null, parentEdge, value, alpha, beta, maximizingPlayer);
-            return value;
+     * @param {list[nodesDict]} nodes 
+     * @param {list[edgesDict]} edges 
+    */
+    const preComputeDijkstra = (nodes, edges, { verbose = true } = {}) => {
+        const dist = {};
+        const prev = {};
+        const visited = new Set();
+        const history = [];
+        const sourceId = nodes[0].id;
+
+        // Initialize distances and previous nodes
+        nodes.forEach(node => {
+            dist[node.id] = Infinity;
+            prev[node.id] = null;
+        });
+        dist[sourceId] = 0;
+
+        const priorityQueue = [{ id: sourceId, dist: 0 }];
+        
+        /**
+         * 
+         * @param {node} node 
+         * @returns 
+         */
+        function traceBackPath(node){
+            const path = [];
+            // console.log(prev) 
+            /**
+             * {
+                "a": null,
+                "b": "a",
+                "c": "e",
+                "d": "a",
+                "e": "d"
+            }
+             */
+            while (node){
+                // console.log("Node", node, node['id'], prev[node['id']])
+                // Get the path from the source to the target
+                const prevNode = prev[node['id']];
+                
+                if ( node['id'] == undefined || prevNode === null){
+                    break;
+                }
+
+                // Ge the edge.
+                const edge = edges.find(e => e.source === prevNode && e.target === node['id']);
+                path.push(edge['id']);
+                // path.push(node['id']);
+                path.push(edge['source'])
+                path.push(edge['target'])
+                path.push(prevNode);
+
+                node = {id: prevNode};
+            }
+            return path.reverse();
         }
 
-        let highlightedNodes = [nodeId];
-        let highlightedEdges = parentEdge ? [parentEdge.id] : [];
-
-        if (maximizingPlayer) {
-            value = -Infinity;
-            for (const edge of nodeEdges) {
-                highlightedEdges.push(edge.id);
-                const result = alphaBeta(edge.target, alpha, beta, false, edge);
-                value = Math.max(value, result);
-                alpha = Math.max(alpha, value);
-                if (alpha >= beta) {
-                    break; // Beta pruning
-                }
+        function getTable() {
+            const table = {};
+            for (let i = 0; i < nodes.length; i++) {
+                const shortest_distance = dist[nodes[i].id];
+                const prev_node = prev[nodes[i].id];
+                table[nodes[i].id] = { shortest_distance, prev_node };
             }
-        } else {
-            value = Infinity;
-            for (const edge of nodeEdges) {
-                highlightedEdges.push(edge.id);
-                const result = alphaBeta(edge.target, alpha, beta, true, edge);
-                value = Math.min(value, result);
-                beta = Math.min(beta, value);
-                if (beta <= alpha) {
-                    break; // Alpha pruning
-                }
-            }
+            return table;
         }
 
-        recordHistory(nodeId, highlightedNodes, highlightedEdges, value, alpha, beta, maximizingPlayer);
-        return value;
-    }
-
-    function recordHistory(nodeId, highlightedNodes, highlightedEdges, value, alpha, beta, maximizingPlayer) {
+        // Record the initial state
         history.push({
             step: history.length,
-            highlighted_nodes: highlightedNodes ? highlightedNodes : [nodeId],
-            highlighted_edges: highlightedEdges ? highlightedEdges : [],
-            value: value,
-            alpha: alpha,
-            beta: beta,
-            maximizingPlayer: maximizingPlayer
+            highlighted_nodes: [sourceId],
+            highlighted_edges: [],
+            table: getTable(),
+            dist: { ...dist },
+            queue: priorityQueue.map(q => q.id)
         });
+
+        while (priorityQueue.length > 0) {
+            priorityQueue.sort((a, b) => a.dist - b.dist);
+            const { id: u } = priorityQueue.shift();
+            visited.add(u);
+
+            // get the traceback.
+            
+            // Record when a node is visited
+            if (verbose) {
+                console.log(`Visiting node: ${u}, Distance: ${dist[u]}`);
+            }
+            
+            edges.filter(edge => edge.source === u).forEach(edge => {
+                const { target: v, value } = edge;
+                // console.log('searching for', v, visited.has(v))
+                const path = traceBackPath({id: u});
+                
+                const table = getTable();
+            
+
+                if (!visited.has(v)) {
+                    const alt = dist[u] + value;
+                    if (alt < dist[v]) {
+                        dist[v] = alt;
+                        prev[v] = u;
+                        priorityQueue.push({ id: v, dist: alt });
+                        const highlightNode = [...path, v, u];
+                        // Record each update
+                        history.push({
+                            step: history.length,
+                            highlighted_nodes: [...highlightNode],
+                            highlighted_edges: [edge.id],
+                            table: table,
+                            dist: { ...dist },
+                            queue: priorityQueue.map(q => q.id)
+                        });
+                    }
+                }
+
+            });
+        }
+
+        // Record the final shortest paths using edges
+        const finalEdges = [];
+        for (const node in prev) {
+            if (prev[node]) {
+                const edge = edges.find(e => e.source === prev[node] && e.target === node);
+                if (edge) {
+                    finalEdges.push(edge.id);
+                }
+            }
+        }
+
+        history.push({
+            step: history.length,
+            highlighted_nodes: [...visited],
+            highlighted_edges: finalEdges,
+            table: getTable(),
+            dist: { ...dist },
+            queue: []
+        });
+
+        return  history
+    
     }
 
-    // Start the algorithm
-    const rootNodeId = nodes[0].id; // Assuming the first node is the root
-    const finalValue = alphaBeta(rootNodeId, -Infinity, Infinity, true);
+    /**
+     * 
+     * @param {list} nodes 
+     * @param {*} edges 
+     * @param {*} param3 
+     * @returns 
+     */
+    function preComputeBellmanFord(nodes, edges,  { verbose = false } = {}) {
+        const dist = {};
+        const prev = {};
+        const history = [];
+        
+        const sourceId = nodes[0].id;
 
-    if (verbose) {
-        console.log("Final Evaluation: ", finalValue);
-        console.log("History: ", history);
-    }
-
-    return history;
-}
-
-
-/**
- * 
- * @param {list} nodes 
- * @param {*} edges 
- * @param {*} param3 
- * @returns 
- */
-function preComputeBellmanFord(nodes, edges, { verbose = false } = {}) {
-    const dist = {};
-    const prev = {};
-    const history = [];
-
-    const sourceId = nodes[0].id;
-
-    // Initialize distances and predecessors
-    nodes.forEach(node => {
-        dist[node.id] = Infinity;
-        prev[node.id] = null;
-    });
-    dist[sourceId] = 0;
-
-    history.push({
-        step: history.length,
-        highlighted_nodes: [sourceId],
-        highlighted_edges: [],
-        dist: { ...dist }
-    });
-
-    // Relax edges repeatedly
-    for (let i = 1; i < nodes.length; i++) { // Repeat this |V| - 1 times
-        let changed = false; // To track any changes in this iteration
+        // Initialize distances and predecessors
+        nodes.forEach(node => {
+            dist[node.id] = Infinity;
+            prev[node.id] = null;
+        });
+        dist[sourceId] = 0;
+    
+        history.push({
+            step: history.length,
+            highlighted_nodes: [sourceId],
+            highlighted_edges: [],
+            dist: { ...dist }
+        });
+    
+        // Relax edges repeatedly
+        for (let i = 1; i < nodes.length; i++) { // Repeat this |V| - 1 times
+            let changed = false; // To track any changes in this iteration
+            for (const edge of edges) {
+                const { source: u, target: v, value: w } = edge;
+                if (dist[u] + w < dist[v]) {
+                    dist[v] = dist[u] + w;
+                    prev[v] = u;
+                    changed = true;
+    
+                    history.push({
+                        step: history.length,
+                        highlighted_nodes: [u, v],
+                        highlighted_edges: [edge.id],
+                        dist: { ...dist }
+                    });
+                }
+            }
+            // If no changes occur, algorithm can terminate early
+            if (!changed) break;
+        }
+    
+        // Check for negative weight cycles
         for (const edge of edges) {
             const { source: u, target: v, value: w } = edge;
             if (dist[u] + w < dist[v]) {
-                dist[v] = dist[u] + w;
-                prev[v] = u;
-                changed = true;
-
-                history.push({
-                    step: history.length,
-                    highlighted_nodes: [u, v],
-                    highlighted_edges: [edge.id],
-                    dist: { ...dist }
-                });
+                console.error("Graph contains a negative weight cycle");
+                return { hasNegativeCycle: true, history };
             }
         }
-        // If no changes occur, algorithm can terminate early
-        if (!changed) break;
-    }
-
-    // Check for negative weight cycles
-    for (const edge of edges) {
-        const { source: u, target: v, value: w } = edge;
-        if (dist[u] + w < dist[v]) {
-            console.error("Graph contains a negative weight cycle");
-            return { hasNegativeCycle: true, history };
-        }
-    }
-
-    // Prepare final step with all shortest paths
-    const finalEdges = [];
-    for (const node in prev) {
-        if (prev[node]) {
-            const edge = edges.find(e => e.source === prev[node] && e.target === node);
-            if (edge) {
-                finalEdges.push(edge.id);
+    
+        // Prepare final step with all shortest paths
+        const finalEdges = [];
+        for (const node in prev) {
+            if (prev[node]) {
+                const edge = edges.find(e => e.source === prev[node] && e.target === node);
+                if (edge) {
+                    finalEdges.push(edge.id);
+                }
             }
         }
+    
+        history.push({
+            step: history.length,
+            highlighted_nodes: Object.keys(dist),
+            highlighted_edges: finalEdges,
+            dist: { ...dist }
+        });
+    
+        if (verbose) {
+            console.log("Final distances from source:", dist);
+            console.log("Predecessors in path:", prev);
+        }
+    
+        return history;
     }
-
-    history.push({
-        step: history.length,
-        highlighted_nodes: Object.keys(dist),
-        highlighted_edges: finalEdges,
-        dist: { ...dist }
-    });
-
-    if (verbose) {
-        console.log("Final distances from source:", dist);
-        console.log("Predecessors in path:", prev);
-    }
-
-    return history;
-}
 
 const algorithms = [
     {
@@ -263,7 +344,7 @@ const examplesDatasets = [
     },
     {
         name: "CLRS Figure 22.6",
-
+        
         isDirected: true,
         nodes: [
             {
@@ -367,7 +448,7 @@ const examplesDatasets = [
 export function SingleShortestPathInteractive() {
     return (
         <>
-            <GraphVisualizer
+            <GraphVisualizer 
                 algorithms={algorithms}
                 examplesDatasets={examplesDatasets}
             />

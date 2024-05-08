@@ -102,7 +102,11 @@ function GraphVisualizer({  algorithms, examplesDatasets }) {
         }
         const currentStep = history[step]
         const toDisplay = [...currentStep.highlighted_nodes, ...currentStep.highlighted_edges]
-        if(verbose) console.table(toDisplay)
+        if(verbose){
+            // console.table(toDisplay)
+            const table = currentStep?.table??{}
+            console.table(table)
+        }
         setHighlightedIds(toDisplay)
 
     }
