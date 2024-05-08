@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Tabs, Tab } from 'react-bootstrap';
 import {SingleShortestPathInteractive} from './SSSInteractiveGraph';
-import { SpanningTreeAbout } from './SpanningTreeAbout';
-import { SpanningTreeProblems } from './SpanningTreeProblems';
+// import { SpanningTreeAbout } from './SpanningTreeAbout';
+// import { SpanningTreeProblems } from './SpanningTreeProblems';
 
 export function SingleShortesPathScreen() {
 
@@ -11,6 +11,11 @@ export function SingleShortesPathScreen() {
     return (
         <>
             <div>
+                <h1>Single Source Shortest Path</h1>
+                <p>
+                    Given a graph G D .V; E/, we want to find a shortest path from a given source vertex `s` inside `V` to each vertex in `V` .
+                </p>
+
                 <div className="visualizationsProblems">
                     <Tabs
                         id="controlled-tab-example"
