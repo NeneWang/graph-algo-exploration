@@ -30,13 +30,13 @@ const featuredProblems = [
     description: "CLRS 25",
     tags: ['Floyd Warshall']
   },
-  {
-    path: '/maximum-flow',
-    title: 'Maximum Flow',
-    img: '/img/maximum-flow.png',
-    description: "CLRS 26",
-    tags: ['Ford Fulkerson', 'Edmonds Karp']
-  },
+  // {
+  //   path: '/maximum-flow',
+  //   title: 'Maximum Flow',
+  //   img: '/img/maximum-flow.png',
+  //   description: "CLRS 26",
+  //   tags: ['Ford Fulkerson', 'Edmonds Karp']
+  // },
   {
     path: '/shortest-path-searching',
     title: 'Shortest Path Searching.',

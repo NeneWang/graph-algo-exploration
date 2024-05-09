@@ -83,7 +83,7 @@ function GraphVisualizer({ algorithms, examplesDatasets }) {
     }
 
 
-    const precalculateAlgorithmSteps = (selectedAlgorithm, nodes, edges, { verbose = true } = {}) => {
+    const precalculateAlgorithmSteps = (selectedAlgorithm, nodes, edges, { verbose = false } = {}) => {
         // To call when the dataset is changed, or the algorithm changes.
         // This will precalculate the steps for the algorithm.
         if (selectedAlgorithm) {
@@ -97,20 +97,20 @@ function GraphVisualizer({ algorithms, examplesDatasets }) {
     }
 
 
-    const displayAlgorithmStep = ({ verbose = true } = {}) => {
+    const displayAlgorithmStep = ({ verbose = false } = {}) => {
         if (step >= history.length) {
             handleFinishAlgorithm()
             return;
         }
         const currentStep = history[step]
         const toDisplay = [...currentStep.highlighted_nodes, ...currentStep.highlighted_edges]
+        const table = currentStep?.table ?? {}
         if (verbose) {
             // console.table(toDisplay)
-            const table = currentStep?.table ?? {}
             console.table(table)
             // console.log(table)
-            setTableData(table)
         }
+        setTableData(table)
         setHighlightedIds(toDisplay)
 
     }
