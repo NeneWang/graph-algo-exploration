@@ -37,13 +37,13 @@ const featuredProblems = [
   //   description: "CLRS 26",
   //   tags: ['Ford Fulkerson', 'Edmonds Karp']
   // },
-  {
-    path: '/shortest-path-searching',
-    title: 'Shortest Path Searching.',
-    img: '/img/shortest-path-searching.png',
-    description: "",
-    tags: ['A*', 'D*', 'Dijkstra']
-  },
+  // {
+  //   path: '/shortest-path-searching',
+  //   title: 'Shortest Path Searching.',
+  //   img: '/img/shortest-path-searching.png',
+  //   description: "",
+  //   tags: ['A*', 'D*', 'Dijkstra']
+  // },
   {
     path: '/adversarial-search',
     title: 'Adversarial Search',
