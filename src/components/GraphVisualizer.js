@@ -40,7 +40,6 @@ function GraphVisualizer({  algorithms, examplesDatasets }) {
     };
 
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     const nextStepAlgorithm = useCallback(async () => {
         if (needsToReset) {
             setStep(0)
@@ -119,7 +118,6 @@ function GraphVisualizer({  algorithms, examplesDatasets }) {
 
     useEffect(() => {
         resetAlgorithm()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
 

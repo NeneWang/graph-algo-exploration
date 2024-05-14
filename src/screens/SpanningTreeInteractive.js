@@ -471,7 +471,6 @@ export function SpanningInteractiveGraph() {
     }
 
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     const stepAlgorithm = useCallback(async () => {
         if(needsToReset){
             console.log(" ============== Needs to reset ==============")
