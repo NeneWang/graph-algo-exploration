@@ -1,4 +1,4 @@
-import React  from 'react';
+import React from 'react';
 import GraphVisualizer from '../components/GraphVisualizer';
 
 
@@ -18,17 +18,47 @@ function preComputeAlphaBeta(nodes, edges, { verbose = false } = {}) {
     const nodeValues = nodes.reduce((acc, node) => ({ ...acc, [node.id]: node.value }), {});
 
     function alphaBeta(nodeId, alpha, beta, maximizingPlayer, parentEdge = null) {
+
+
         const nodeEdges = edges.filter(edge => edge.source === nodeId);
         let value;
 
         if (!nodeEdges.length) { // Assume leaf node
             value = nodeValues[nodeId];
-            recordHistory(nodeId, [], [], value, alpha, beta, maximizingPlayer);
+            recordHistory(nodeId, [nodeId], [], value, alpha, beta, maximizingPlayer, 'Leaf Node');
             return value;
         }
 
         let highlightedNodes = [nodeId];
         let highlightedEdges = parentEdge ? [parentEdge.id] : [];
+
+
+
+        function getTable(value, alpha, beta, maximizingPlayer, message) {
+            const table = {};
+            table[nodeId] = {
+                alpha: alpha,
+                beta: beta,
+                maximizingPlayer: maximizingPlayer,
+                value: value,
+                parentEdgeId: parentEdge ? parentEdge.id : null,
+                message: message
+            }
+
+            return table;
+        }
+
+
+        function recordHistory(nodeId, highlightedNodes, highlightedEdges, value, alpha, beta, maximizingPlayer, message = null) {
+            history.push({
+                step: history.length,
+                highlighted_nodes: highlightedNodes ? highlightedNodes : [nodeId],
+                highlighted_edges: highlightedEdges ? highlightedEdges : [],
+                table: getTable(value, alpha, beta, maximizingPlayer, message),
+            });
+        }
+
+
 
         if (maximizingPlayer) {
             value = -Infinity;
@@ -37,6 +67,7 @@ function preComputeAlphaBeta(nodes, edges, { verbose = false } = {}) {
                 const result = alphaBeta(edge.target, alpha, beta, false, edge);
                 value = Math.max(value, result);
                 alpha = Math.max(alpha, value);
+                recordHistory(nodeId, highlightedNodes, highlightedEdges, value, alpha, beta, maximizingPlayer, 'Maximizing');
                 if (alpha >= beta) {
                     break; // Beta pruning
                 }
@@ -48,32 +79,18 @@ function preComputeAlphaBeta(nodes, edges, { verbose = false } = {}) {
                 const result = alphaBeta(edge.target, alpha, beta, true, edge);
                 value = Math.min(value, result);
                 beta = Math.min(beta, value);
+                recordHistory(nodeId, highlightedNodes, highlightedEdges, value, alpha, beta, maximizingPlayer, 'Minimizing');
                 if (beta <= alpha) {
                     break; // Alpha pruning
                 }
             }
         }
 
-        recordHistory(nodeId, highlightedNodes, highlightedEdges, value, alpha, beta, maximizingPlayer);
         return value;
     }
-
-    function recordHistory(nodeId, highlightedNodes, highlightedEdges, value, alpha, beta, maximizingPlayer) {
-        console.log("Trying to push edges")
-        console.log("Highlighted Edges: ", highlightedEdges)
-        history.push({
-            step: history.length,
-            highlighted_nodes: highlightedNodes ? highlightedNodes : [nodeId],
-            highlighted_edges: highlightedEdges ? highlightedEdges : [],
-            value: value,
-            alpha: alpha,
-            beta: beta,
-            maximizingPlayer: maximizingPlayer
-        });
-    }
-
     // Start the algorithm
     const rootNodeId = nodes[0].id; // Assuming the first node is the root
+    console.log("nodes", nodes, "edges", edges, "rootNodeId", rootNodeId)
     const finalValue = alphaBeta(rootNodeId, -Infinity, Infinity, true);
 
     if (verbose) {
@@ -135,7 +152,7 @@ const exampleDatasets = [
 export function AdversarialInteractiveGraph() {
     return (
         <>
-            <GraphVisualizer 
+            <GraphVisualizer
                 algorithms={algorithms}
                 examplesDatasets={exampleDatasets}
             />

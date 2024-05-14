@@ -119,7 +119,6 @@ function GraphVisualizer({ algorithms, examplesDatasets }) {
         setHighlightedIds([])
         setIsAlgorithmFinished(false)
         setIsDirected(selectedExample?.isDirected ?? false)
-        console.log(selectedExample, 'isDirected')
         precalculateAlgorithmSteps(selectedAlgorithm, nodes, edges)
         // displayAlgorithmStep()
     }
