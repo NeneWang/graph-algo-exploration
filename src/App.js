@@ -14,14 +14,14 @@ import './global.css';
 
 import { BrowserRouter as Router, Routes, Route, Navigate, RouterProvider } from 'react-router-dom';
 
-const ProtectedRoute = ({ user, children }) => {
-  console.log(user, 'user')
-  if (!user) {
-    return <Navigate to="/" replace />;
-  }
+// const ProtectedRoute = ({ user, children }) => {
+//   console.log(user, 'user')
+//   if (!user) {
+//     return <Navigate to="/" replace />;
+//   }
 
-  return children;
-};
+//   return children;
+// };
 
 function App() {
   return (
