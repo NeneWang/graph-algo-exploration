@@ -5,382 +5,130 @@ import GraphVisualizer from '../components/GraphVisualizer';
 const DIJIKSTRA_ALGORITHM = 'Dijikstra Algorithm';
 const BELLMAN_FORD_ALGORITHM = 'Bellman Ford Algorithm';
 
+/**
+ * Adversarial Search with Alpha-Beta Pruning
+ * 
+ * @param {Array} nodes - Array of node objects {id: 'node_id', label: 'node_label'}
+ * @param {Array} edges - Array of edge objects {id: 'edge_id', source: 'source_id', target: 'target_id', value: number}
+ * @param {Object} options - Contains the verbose parameter for logging
+ * @returns {Array} - Array of history objects detailing each computation step
+ */
+function preComputeAlphaBeta(nodes, edges, { verbose = false } = {}) {
+    const history = [];
+    const nodeValues = nodes.reduce((acc, node) => ({ ...acc, [node.id]: node.value }), {});
 
-    /**
-    
-    nodes: {
-        id: 'n0',
-        label: 'n0'
-    },
+    function alphaBeta(nodeId, alpha, beta, maximizingPlayer, parentEdge = null) {
+        const nodeEdges = edges.filter(edge => edge.source === nodeId);
+        let value;
 
-    edgesDict: {
-        id: '0->1',
-        source: 'n0',
-        target: 'n1',
-        label: '4',
-        value: 4
-    },
-
-     * @param {list[nodesDict]} nodes 
-     * @param {list[edgesDict]} edges 
-    */
-    const preComputeDijkstra = (nodes, edges, { verbose = true } = {}) => {
-        const dist = {};
-        const prev = {};
-        const visited = new Set();
-        const history = [];
-        const sourceId = nodes[0].id;
-
-        // Initialize distances and previous nodes
-        nodes.forEach(node => {
-            dist[node.id] = Infinity;
-            prev[node.id] = null;
-        });
-        dist[sourceId] = 0;
-
-        const priorityQueue = [{ id: sourceId, dist: 0 }];
-
-        // Record the initial state
-        history.push({
-            step: history.length,
-            highlighted_nodes: [sourceId],
-            highlighted_edges: [],
-            dist: { ...dist },
-            queue: priorityQueue.map(q => q.id)
-        });
-
-        while (priorityQueue.length > 0) {
-            priorityQueue.sort((a, b) => a.dist - b.dist);
-            const { id: u } = priorityQueue.shift();
-            visited.add(u);
-
-            // Record when a node is visited
-            if (verbose) {
-                console.log(`Visiting node: ${u}, Distance: ${dist[u]}`);
-            }
-
-            edges.filter(edge => edge.source === u).forEach(edge => {
-                const { target: v, value } = edge;
-                if (!visited.has(v)) {
-                    const alt = dist[u] + value;
-                    if (alt < dist[v]) {
-                        dist[v] = alt;
-                        prev[v] = u;
-                        priorityQueue.push({ id: v, dist: alt });
-
-                        // Record each update
-                        history.push({
-                            step: history.length,
-                            highlighted_nodes: [u, v],
-                            highlighted_edges: [edge.id],
-                            dist: { ...dist },
-                            queue: priorityQueue.map(q => q.id)
-                        });
-                    }
-                }
-            });
+        if (!nodeEdges.length) { // Assume leaf node
+            value = nodeValues[nodeId];
+            recordHistory(nodeId, [], [], value, alpha, beta, maximizingPlayer);
+            return value;
         }
 
-        // Record the final shortest paths using edges
-        const finalEdges = [];
-        for (const node in prev) {
-            if (prev[node]) {
-                const edge = edges.find(e => e.source === prev[node] && e.target === node);
-                if (edge) {
-                    finalEdges.push(edge.id);
+        let highlightedNodes = [nodeId];
+        let highlightedEdges = parentEdge ? [parentEdge.id] : [];
+
+        if (maximizingPlayer) {
+            value = -Infinity;
+            for (const edge of nodeEdges) {
+                highlightedEdges.push(edge.id);
+                const result = alphaBeta(edge.target, alpha, beta, false, edge);
+                value = Math.max(value, result);
+                alpha = Math.max(alpha, value);
+                if (alpha >= beta) {
+                    break; // Beta pruning
+                }
+            }
+        } else {
+            value = Infinity;
+            for (const edge of nodeEdges) {
+                highlightedEdges.push(edge.id);
+                const result = alphaBeta(edge.target, alpha, beta, true, edge);
+                value = Math.min(value, result);
+                beta = Math.min(beta, value);
+                if (beta <= alpha) {
+                    break; // Alpha pruning
                 }
             }
         }
 
-        history.push({
-            step: history.length,
-            highlighted_nodes: [...visited],
-            highlighted_edges: finalEdges,
-            dist: { ...dist },
-            queue: []
-        });
-        if (verbose) {
-            // show distances and predecessors as a console.table.
-            console.table(history)
-        }
-        return  history
-    
+        recordHistory(nodeId, highlightedNodes, highlightedEdges, value, alpha, beta, maximizingPlayer);
+        return value;
     }
 
-    /**
-     * 
-     * @param {list} nodes 
-     * @param {*} edges 
-     * @param {*} param3 
-     * @returns 
-     */
-    function preComputeBellmanFord(nodes, edges,  { verbose = false } = {}) {
-        const dist = {};
-        const prev = {};
-        const history = [];
-        
-        const sourceId = nodes[0].id;
-
-        // Initialize distances and predecessors
-        nodes.forEach(node => {
-            dist[node.id] = Infinity;
-            prev[node.id] = null;
-        });
-        dist[sourceId] = 0;
-    
+    function recordHistory(nodeId, highlightedNodes, highlightedEdges, value, alpha, beta, maximizingPlayer) {
+        console.log("Trying to push edges")
+        console.log("Highlighted Edges: ", highlightedEdges)
         history.push({
             step: history.length,
-            highlighted_nodes: [sourceId],
-            highlighted_edges: [],
-            dist: { ...dist }
+            highlighted_nodes: highlightedNodes ? highlightedNodes : [nodeId],
+            highlighted_edges: highlightedEdges ? highlightedEdges : [],
+            value: value,
+            alpha: alpha,
+            beta: beta,
+            maximizingPlayer: maximizingPlayer
         });
-    
-        // Relax edges repeatedly
-        for (let i = 1; i < nodes.length; i++) { // Repeat this |V| - 1 times
-            let changed = false; // To track any changes in this iteration
-            for (const edge of edges) {
-                const { source: u, target: v, value: w } = edge;
-                if (dist[u] + w < dist[v]) {
-                    dist[v] = dist[u] + w;
-                    prev[v] = u;
-                    changed = true;
-    
-                    history.push({
-                        step: history.length,
-                        highlighted_nodes: [u, v],
-                        highlighted_edges: [edge.id],
-                        dist: { ...dist }
-                    });
-                }
-            }
-            // If no changes occur, algorithm can terminate early
-            if (!changed) break;
-        }
-    
-        // Check for negative weight cycles
-        for (const edge of edges) {
-            const { source: u, target: v, value: w } = edge;
-            if (dist[u] + w < dist[v]) {
-                console.error("Graph contains a negative weight cycle");
-                return { hasNegativeCycle: true, history };
-            }
-        }
-    
-        // Prepare final step with all shortest paths
-        const finalEdges = [];
-        for (const node in prev) {
-            if (prev[node]) {
-                const edge = edges.find(e => e.source === prev[node] && e.target === node);
-                if (edge) {
-                    finalEdges.push(edge.id);
-                }
-            }
-        }
-    
-        history.push({
-            step: history.length,
-            highlighted_nodes: Object.keys(dist),
-            highlighted_edges: finalEdges,
-            dist: { ...dist }
-        });
-    
-        if (verbose) {
-            console.log("Final distances from source:", dist);
-            console.log("Predecessors in path:", prev);
-        }
-    
-        return history;
     }
+
+    // Start the algorithm
+    const rootNodeId = nodes[0].id; // Assuming the first node is the root
+    const finalValue = alphaBeta(rootNodeId, -Infinity, Infinity, true);
+
+    if (verbose) {
+        console.log("Final Evaluation: ", finalValue);
+        console.log("History: ", history);
+    }
+
+    return history;
+}
+
+
 
 const algorithms = [
     {
-        name: DIJIKSTRA_ALGORITHM,
-        description: DIJIKSTRA_ALGORITHM,
-        preCalculate: preComputeDijkstra
-    },
-    {
-        name: BELLMAN_FORD_ALGORITHM,
-        description: BELLMAN_FORD_ALGORITHM,
-        preCalculate: preComputeBellmanFord
+        name: 'Alpha-Beta Pruning',
+        // eslint-disable-next-line no-multi-str
+        description: 'Alpha-Beta Pruning is a search algorithm that seeks to decrease the number of nodes that are evaluated by the minimax algorithm in its search tree. \n\
+        It is an adversarial search algorithm used commonly for two-player games. It stops evaluating a move when at least one possibility has been found that proves the move to be worse than a previously examined move. Such moves need not be evaluated further.',
+        preCalculate: preComputeAlphaBeta
     }
 ]
 
-const examplesDatasets = [
+const exampleDatasets = [
     {
-        name: "Dijikstra Path Sample",
+        name: "Adversarial Search with Pruning Example",
         nodes: [
-            {
-                id: 'a',
-                label: 'a'
-            },
-            {
-                id: 'b',
-                label: 'b'
-            },
-            {
-                id: 'c',
-                label: 'c'
-            },
-            {
-                id: 'd',
-                label: 'd'
-            },
-            {
-                id: 'e',
-                label: 'e'
-            }
+            { id: 'A', label: 'A' },  // Root node
+            { id: 'B', label: 'B' },
+            { id: 'C', label: 'C' },
+            { id: 'D', label: 'D' },
+            { id: 'E', label: 'E' },
+            { id: 'F', label: 'F' },
+            { id: 'G', label: 'G' },
+            { id: 'H', label: 'H' },
+            { id: 'I', label: 'I' },
+            { id: 'J', label: 'J' },
+            { id: 'K', label: 'K' },
+            { id: 'L', label: 'L' }
         ],
         edges: [
-            {
-                id: 'a--b',
-                source: 'a',
-                target: 'b',
-                label: '6',
-                value: 6
-            },
-            {
-                id: 'a--d',
-                source: 'a',
-                target: 'd',
-                label: '1',
-                value: 1
-            },
-            {
-                id: 'b--c',
-                source: 'b',
-                target: 'c',
-                label: '5',
-                value: 5
-            },
-            {
-                id: 'b--d',
-                source: 'b',
-                target: 'd',
-                label: '2',
-                varlue: 2
-            },
-            {
-                id: 'b--e',
-                source: 'b',
-                target: 'e',
-                label: '2',
-                value: 2
-            },
-            {
-                id: 'd--e',
-                source: 'd',
-                target: 'e',
-                label: '1',
-                value: 1
-            },
-            {
-                id: 'e--c',
-                source: 'e',
-                target: 'c',
-                label: '5',
-                value: 5
-
-            }
+            { id: 'A->B', source: 'A', target: 'B', label: 'A->B' },
+            { id: 'A->C', source: 'A', target: 'C', label: 'A->C' },
+            { id: 'B->D', source: 'B', target: 'D', label: 'B->D' },
+            { id: 'B->E', source: 'B', target: 'E', label: 'B->E' },
+            { id: 'C->F', source: 'C', target: 'F', label: 'C->F' },
+            { id: 'C->G', source: 'C', target: 'G', label: 'C->G' },
+            { id: 'D->H', source: 'D', target: 'H', label: '3', value: 3 },
+            { id: 'D->I', source: 'D', target: 'I', label: '5', value: 5 },
+            { id: 'E->J', source: 'E', target: 'J', label: '6', value: 6 },
+            { id: 'E->K', source: 'E', target: 'K', label: '9', value: 9 },
+            { id: 'F->L', source: 'F', target: 'L', label: '1', value: 1 }
+            // Note: Node G and its descendants are pruned and not expanded.
         ]
-    },
-    {
-        name: "CLRS Figure 22.6",
-        nodes: [
-            {
-                id: 's',
-                label: 's'
-            },
-            {
-                id: 't',
-                label: 't'
-            },
-            {
-                id: 'x',
-                label: 'x'
-            },
-            {
-                id: 'y',
-                label: 'y'
-            },
-            {
-                id: 'z',
-                label: 'z'
-            }
-        ],
-        edges: [
-            {
-                id: 's->t',
-                source: 's',
-                target: 't',
-                label: '10',
-                value: 10
-            },
-            {
-                id: 's->y',
-                source: 's',
-                target: 'y',
-                label: '5',
-            },
-            {
-                id: 't->x',
-                source: 't',
-                target: 'x',
-                label: '1',
-                value: 1
-            },
-            {
-                id: 't->y',
-                source: 't',
-                target: 'y',
-                label: '2',
-                value: 2
-            },
-            {
-                id: 'x->z',
-                source: 'x',
-                target: 'z',
-                label: '4',
-                value: 4
-            },
-            {
-                id: 'y->t',
-                source: 'y',
-                target: 't',
-                label: '3',
-                value: 3
-            },
-            {
-                id: 'y->x',
-                source: 'y',
-                target: 'x',
-                label: '9',
-                value: 9
-            },
-            {
-                id: 'y->z',
-                source: 'y',
-                target: 'z',
-                label: '2',
-                value: 2
-            },
-            {
-                id: 'z->s',
-                source: 'z',
-                target: 's',
-                label: '7',
-                value: 7
-            },
-            {
-                id: 'z->x',
-                source: 'z',
-                target: 'x',
-                label: '6',
-                value: 6
-            }
-        ]
-
     }
-]
+];
 
 
 
@@ -389,7 +137,7 @@ export function AdversarialInteractiveGraph() {
         <>
             <GraphVisualizer 
                 algorithms={algorithms}
-                examplesDatasets={examplesDatasets}
+                examplesDatasets={exampleDatasets}
             />
 
 

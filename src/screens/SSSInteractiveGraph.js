@@ -39,12 +39,64 @@ const BELLMAN_FORD_ALGORITHM = 'Bellman Ford Algorithm';
         dist[sourceId] = 0;
 
         const priorityQueue = [{ id: sourceId, dist: 0 }];
+        
+        /**
+         * 
+         * @param {node} node 
+         * @returns 
+         */
+        function traceBackPath(node){
+            const path = [];
+            // console.log(prev) 
+            /**
+             * {
+                "a": null,
+                "b": "a",
+                "c": "e",
+                "d": "a",
+                "e": "d"
+            }
+             */
+            while (node){
+                // console.log("Node", node, node['id'], prev[node['id']])
+                // Get the path from the source to the target
+                const prevNode = prev[node['id']];
+                
+                // eslint-disable-next-line eqeqeq
+                if ( node['id'] == undefined || prevNode === null){
+                    break;
+                }
+
+                // Ge the edge.
+                // eslint-disable-next-line no-loop-func
+                const edge = edges.find(e => e.source === prevNode && e.target === node['id']);
+                path.push(edge['id']);
+                // path.push(node['id']);
+                path.push(edge['source'])
+                path.push(edge['target'])
+                path.push(prevNode);
+
+                node = {id: prevNode};
+            }
+            return path.reverse();
+        }
+
+        function getTable() {
+            const table = {};
+            for (let i = 0; i < nodes.length; i++) {
+                const shortest_distance = dist[nodes[i].id];
+                const prev_node = prev[nodes[i].id];
+                table[nodes[i].id] = { shortest_distance, prev_node };
+            }
+            return table;
+        }
 
         // Record the initial state
         history.push({
             step: history.length,
             highlighted_nodes: [sourceId],
             highlighted_edges: [],
+            table: getTable(),
             dist: { ...dist },
             queue: priorityQueue.map(q => q.id)
         });
@@ -54,30 +106,40 @@ const BELLMAN_FORD_ALGORITHM = 'Bellman Ford Algorithm';
             const { id: u } = priorityQueue.shift();
             visited.add(u);
 
+            // get the traceback.
+            
             // Record when a node is visited
             if (verbose) {
                 console.log(`Visiting node: ${u}, Distance: ${dist[u]}`);
             }
-
+            
             edges.filter(edge => edge.source === u).forEach(edge => {
                 const { target: v, value } = edge;
+                // console.log('searching for', v, visited.has(v))
+                const path = traceBackPath({id: u});
+                
+                const table = getTable();
+            
+
                 if (!visited.has(v)) {
                     const alt = dist[u] + value;
                     if (alt < dist[v]) {
                         dist[v] = alt;
                         prev[v] = u;
                         priorityQueue.push({ id: v, dist: alt });
-
+                        const highlightNode = [...path, v, u];
                         // Record each update
                         history.push({
                             step: history.length,
-                            highlighted_nodes: [u, v],
+                            highlighted_nodes: [...highlightNode],
                             highlighted_edges: [edge.id],
+                            table: table,
                             dist: { ...dist },
                             queue: priorityQueue.map(q => q.id)
                         });
                     }
                 }
+
             });
         }
 
@@ -96,6 +158,7 @@ const BELLMAN_FORD_ALGORITHM = 'Bellman Ford Algorithm';
             step: history.length,
             highlighted_nodes: [...visited],
             highlighted_edges: finalEdges,
+            table: getTable(),
             dist: { ...dist },
             queue: []
         });
@@ -124,13 +187,65 @@ const BELLMAN_FORD_ALGORITHM = 'Bellman Ford Algorithm';
             prev[node.id] = null;
         });
         dist[sourceId] = 0;
+
+        /**
+         * 
+         * @param {node} node 
+         * @returns 
+         */
+        function traceBackPath(node){
+            const path = [];
+            // console.log(prev) 
+            /**
+             * {
+                "a": null,
+                "b": "a",
+                "c": "e",
+                "d": "a",
+                "e": "d"
+            }
+             */
+            while (node){
+                // console.log("Node", node, node['id'], prev[node['id']])
+                // Get the path from the source to the target
+                const prevNode = prev[node['id']];
+                
+                // eslint-disable-next-line eqeqeq
+                if ( node['id'] == undefined || prevNode === null){
+                    break;
+                }
+
+                // Ge the edge.
+                // eslint-disable-next-line no-loop-func
+                const edge = edges.find(e => e.source === prevNode && e.target === node['id']);
+                path.push(edge['id']);
+                // path.push(node['id']);
+                path.push(edge['source'])
+                path.push(edge['target'])
+                path.push(prevNode);
+
+                node = {id: prevNode};
+            }
+            return path.reverse();
+        }
+        function getTable() {
+            const table = {};
+            for (let i = 0; i < nodes.length; i++) {
+                const shortest_distance = dist[nodes[i].id];
+                const prev_node = prev[nodes[i].id];
+                table[nodes[i].id] = { shortest_distance, prev_node };
+            }
+            return table;
+        }
     
         history.push({
             step: history.length,
             highlighted_nodes: [sourceId],
             highlighted_edges: [],
+            table: getTable(),
             dist: { ...dist }
         });
+
     
         // Relax edges repeatedly
         for (let i = 1; i < nodes.length; i++) { // Repeat this |V| - 1 times
@@ -141,11 +256,15 @@ const BELLMAN_FORD_ALGORITHM = 'Bellman Ford Algorithm';
                     dist[v] = dist[u] + w;
                     prev[v] = u;
                     changed = true;
+
+                    const path = traceBackPath({id: u});
+                    const highlight = [...path, v, u];
     
                     history.push({
                         step: history.length,
-                        highlighted_nodes: [u, v],
+                        highlighted_nodes: highlight,
                         highlighted_edges: [edge.id],
+                        table: getTable(),
                         dist: { ...dist }
                     });
                 }
@@ -178,6 +297,7 @@ const BELLMAN_FORD_ALGORITHM = 'Bellman Ford Algorithm';
             step: history.length,
             highlighted_nodes: Object.keys(dist),
             highlighted_edges: finalEdges,
+            table: getTable(),
             dist: { ...dist }
         });
     

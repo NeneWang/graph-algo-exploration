@@ -1,21 +1,20 @@
 import React, { useState } from 'react';
 import { Tabs, Tab } from 'react-bootstrap';
 // import {SingleShortestPathInteractive} from './SSSInteractiveGraph';
-import {AllPairsInteractive} from './allPairsInteractive';
+import { AdversarialInteractiveGraph } from './AdversarialInteractiveGraph';
 // import { SpanningTreeAbout } from './SpanningTreeAbout';
 // import { SpanningTreeProblems } from './SpanningTreeProblems';
 
-export function AllPairsShortestPathScreen() {
+export function AdversarialSearchScreen() {
 
     const [key, setKey] = useState('interactive-graph');
 
     return (
         <>
             <div>
-            <h1>All-Pairs Shortest Path Problem</h1>
-            <p>Given a graph with weighted edges as input, the All-Pairs Shortest Path Problem aims to find the shortest path between every pair of nodes. The expected output is a matrix where each entry represents the shortest distance between a pair of nodes.</p>
-
-
+                <br />
+                <h3>Adversarial Search</h3>
+                <br />
                 <div className="visualizationsProblems">
                     <Tabs
                         id="controlled-tab-example"
@@ -28,7 +27,7 @@ export function AllPairsShortestPathScreen() {
                     </Tabs>
                 </div>
                 {/* Show if tab ==  */}
-                {key === 'interactive-graph' && <AllPairsInteractive />}
+                {key === 'interactive-graph' && <AdversarialInteractiveGraph />}
                 {/* {key === 'about' && <SpanningTreeAbout />}
                 {key === 'problems' && <SpanningTreeProblems />} */}
 
