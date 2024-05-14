@@ -43,11 +43,11 @@ export const NavBarHeader = () => {
           (
             <>
 
-              <Button className="ms-auto" variant="outline-primary"
+              {/* <Button className="ms-auto" variant="outline-primary"
                 onClick={handleLogin}
               >
                 Login
-              </Button>
+              </Button> */}
             </>
           )
         }

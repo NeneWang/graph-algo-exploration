@@ -153,6 +153,9 @@ const exampleDatasets = [
         ],
         desc_img: [
             'https://www.webpagescreenshot.info/image-url/ArWcsfuwE'
+        ],
+        desc:[
+            'Figure 1: https://www.mygreatlearning.com/blog/alpha-beta-pruning-in-ai/'
         ]
     }
 ];
