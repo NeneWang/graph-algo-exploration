@@ -37,8 +37,8 @@ function TableDisplayer({ tableData }) {
         // console.log('tableData', tableData, Object.keys(tableData).length)
         rowsKeys = Object.keys(tableData)
         colsKeys = Object.keys(tableData[rowsKeys[0]])
-        console.log('colsKeys', colsKeys)
-        console.log('tableData', tableData)
+        // console.log('colsKeys', colsKeys)
+        // console.log('tableData', tableData)
     }
 
 

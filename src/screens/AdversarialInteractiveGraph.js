@@ -8,7 +8,7 @@ const BELLMAN_FORD_ALGORITHM = 'Bellman Ford Algorithm';
 /**
  * Adversarial Search with Alpha-Beta Pruning
  * 
- * @param {Array} nodes - Array of node objects {id: 'node_id', label: 'node_label'}
+ * @param {Array} nodes - Array of node objects {id: 'node_id', label: 'node_label', values: number}
  * @param {Array} edges - Array of edge objects {id: 'edge_id', source: 'source_id', target: 'target_id', value: number}
  * @param {Object} options - Contains the verbose parameter for logging
  * @returns {Array} - Array of history objects detailing each computation step
@@ -18,8 +18,6 @@ function preComputeAlphaBeta(nodes, edges, { verbose = false } = {}) {
     const nodeValues = nodes.reduce((acc, node) => ({ ...acc, [node.id]: node.value }), {});
 
     function alphaBeta(nodeId, alpha, beta, maximizingPlayer, parentEdge = null) {
-
-
         const nodeEdges = edges.filter(edge => edge.source === nodeId);
         let value;
 
@@ -32,8 +30,6 @@ function preComputeAlphaBeta(nodes, edges, { verbose = false } = {}) {
         let highlightedNodes = [nodeId];
         let highlightedEdges = parentEdge ? [parentEdge.id] : [];
 
-
-
         function getTable(value, alpha, beta, maximizingPlayer, message) {
             const table = {};
             table[nodeId] = {
@@ -43,11 +39,9 @@ function preComputeAlphaBeta(nodes, edges, { verbose = false } = {}) {
                 value: value,
                 parentEdgeId: parentEdge ? parentEdge.id : null,
                 message: message
-            }
-
+            };
             return table;
         }
-
 
         function recordHistory(nodeId, highlightedNodes, highlightedEdges, value, alpha, beta, maximizingPlayer, message = null) {
             history.push({
@@ -57,13 +51,13 @@ function preComputeAlphaBeta(nodes, edges, { verbose = false } = {}) {
                 table: getTable(value, alpha, beta, maximizingPlayer, message),
             });
         }
-
-
-
+        
+        recordHistory(nodeId, highlightedNodes, highlightedEdges, value, alpha, beta, maximizingPlayer, 'Traversing Node');
         if (maximizingPlayer) {
             value = -Infinity;
             for (const edge of nodeEdges) {
                 highlightedEdges.push(edge.id);
+                
                 const result = alphaBeta(edge.target, alpha, beta, false, edge);
                 value = Math.max(value, result);
                 alpha = Math.max(alpha, value);
@@ -73,7 +67,6 @@ function preComputeAlphaBeta(nodes, edges, { verbose = false } = {}) {
                     break; // Beta pruning
                 } else {
                     recordHistory(nodeId, highlightedNodes, highlightedEdges, value, alpha, beta, maximizingPlayer, 'Maximizing Node');
-
                 }
             }
         } else {
@@ -89,16 +82,15 @@ function preComputeAlphaBeta(nodes, edges, { verbose = false } = {}) {
                     break; // Alpha pruning
                 } else {
                     recordHistory(nodeId, highlightedNodes, highlightedEdges, value, alpha, beta, maximizingPlayer, 'Minimizing Node');
-
                 }
             }
         }
 
         return value;
     }
+
     // Start the algorithm
     const rootNodeId = nodes[0].id; // Assuming the first node is the root
-    console.log("nodes", nodes, "edges", edges, "rootNodeId", rootNodeId)
     const finalValue = alphaBeta(rootNodeId, -Infinity, Infinity, true);
 
     if (verbose) {
@@ -108,6 +100,7 @@ function preComputeAlphaBeta(nodes, edges, { verbose = false } = {}) {
 
     return history;
 }
+
 
 
 
@@ -125,6 +118,13 @@ const exampleDatasets = [
     {
         name: " 2, 3, 5, 9, 0, 1, 7, 5",
         nodes: [
+            { id: 'ABCDEFGH', label: 'ABCDEFGH', value: null },
+            { id: 'ABCD', label: 'ABCD', value: null },
+            { id: 'EFGH', label: 'EFGH', value: null },
+            { id: 'AB', label: 'AB', value: null },
+            { id: 'CD', label: 'CD', value: null },
+            { id: 'EF', label: 'EF', value: null },
+            { id: 'GH', label: 'GH', value: null },
             { id: 'A', label: 'A', value: 2 },
             { id: 'B', label: 'B', value: 3 },
             { id: 'C', label: 'C', value: 5 },
@@ -134,13 +134,6 @@ const exampleDatasets = [
             { id: 'G', label: 'G', value: 7 },
             { id: 'H', label: 'H', value: 5 },
             // Also add the non leaf nodes pairing (a, b), (c, d)... (g, h)
-            { id: 'AB', label: 'AB', value: null },
-            { id: 'CD', label: 'CD', value: null },
-            { id: 'EF', label: 'EF', value: null },
-            { id: 'GH', label: 'GH', value: null },
-            { id: 'ABCD', label: 'ABCD', value: null },
-            { id: 'EFGH', label: 'EFGH', value: null },
-            { id: 'ABCDEFGH', label: 'ABCDEFGH', value: null },
         ],
         edges: [
             { id: 'ABCDEFGH -> ABCD', source: 'ABCDEFGH', target: 'ABCD', label: '> ABCD' },

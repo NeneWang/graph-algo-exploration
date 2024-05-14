@@ -90,7 +90,6 @@ function GraphVisualizer(precalculateAlgorithmSteps, resetAlgorithm, history) {
     };
 
     
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     const nextStepAlgorithm = useCallback(async () => {
         if (needsToReset) {
             precalculateAlgorithmSteps()
@@ -135,7 +134,6 @@ function GraphVisualizer(precalculateAlgorithmSteps, resetAlgorithm, history) {
 
     useEffect(() => {
         precalculateAlgorithmSteps()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
 
@@ -401,6 +399,54 @@ HIghlighted edges doesnt seem to be working?
 
 
 ## Adversarial Search
+
+
+Will this work?
+
+```
+const exampleDatasets = [
+    {
+        name: " 2, 3, 5, 9, 0, 1, 7, 5",
+        nodes: [
+            { id: 'ABCDEFGH', label: 'ABCDEFGH', value: null },
+            { id: 'ABCD', label: 'ABCD', value: null },
+            { id: 'EFGH', label: 'EFGH', value: null },
+            { id: 'AB', label: 'AB', value: null },
+            { id: 'CD', label: 'CD', value: null },
+            { id: 'EF', label: 'EF', value: null },
+            { id: 'GH', label: 'GH', value: null },
+            { id: 'A', label: 'A', value: 2 },
+            { id: 'B', label: 'B', value: 3 },
+            { id: 'C', label: 'C', value: 5 },
+            { id: 'D', label: 'D', value: 9 },
+            { id: 'E', label: 'E', value: 0 },
+            { id: 'F', label: 'F', value: 1 },
+            { id: 'G', label: 'G', value: 7 },
+            { id: 'H', label: 'H', value: 5 },
+            // Also add the non leaf nodes pairing (a, b), (c, d)... (g, h)
+        ],
+        edges: [
+            { id: 'ABCDEFGH -> ABCD', source: 'ABCDEFGH', target: 'ABCD', label: '> ABCD' },
+            { id: 'ABCDEFGH -> EFGH', source: 'ABCDEFGH', target: 'EFGH', label: '> EFGH' },
+            { id: 'ABCD -> AB', source: 'ABCD', target: 'AB', label: '> AB' },
+            { id: 'ABCD -> CD', source: 'ABCD', target: 'CD', label: '> CD' },
+            { id: 'EFGH -> EF', source: 'EFGH', target: 'EF', label: '> EF' },
+            { id: 'EFGH -> GH', source: 'EFGH', target: 'GH', label: '> GH' },
+            { id: 'AB -> A', source: 'AB', target: 'A', label: '> A' },
+            { id: 'AB -> B', source: 'AB', target: 'B', label: '> B' },
+            { id: 'CD -> C', source: 'CD', target: 'C', label: '> C' },
+            { id: 'CD -> D', source: 'CD', target: 'D', label: '> D' },
+            { id: 'EF -> E', source: 'EF', target: 'E', label: '> E' },
+            { id: 'EF -> F', source: 'EF', target: 'F', label: '> F' },
+            { id: 'GH -> G', source: 'GH', target: 'G', label: '> G' },
+            { id: 'GH -> H', source: 'GH', target: 'H', label: '> H' }
+        ]
+    }
+];
+```
+
+given:
+
 
 
 ### Minimax
