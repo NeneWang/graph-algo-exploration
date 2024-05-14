@@ -67,9 +67,13 @@ function preComputeAlphaBeta(nodes, edges, { verbose = false } = {}) {
                 const result = alphaBeta(edge.target, alpha, beta, false, edge);
                 value = Math.max(value, result);
                 alpha = Math.max(alpha, value);
-                recordHistory(nodeId, highlightedNodes, highlightedEdges, value, alpha, beta, maximizingPlayer, 'Maximizing');
+
                 if (alpha >= beta) {
+                    recordHistory(nodeId, highlightedNodes, highlightedEdges, value, alpha, beta, maximizingPlayer, 'Maximizing Pruning');
                     break; // Beta pruning
+                } else {
+                    recordHistory(nodeId, highlightedNodes, highlightedEdges, value, alpha, beta, maximizingPlayer, 'Maximizing Node');
+
                 }
             }
         } else {
@@ -79,9 +83,13 @@ function preComputeAlphaBeta(nodes, edges, { verbose = false } = {}) {
                 const result = alphaBeta(edge.target, alpha, beta, true, edge);
                 value = Math.min(value, result);
                 beta = Math.min(beta, value);
-                recordHistory(nodeId, highlightedNodes, highlightedEdges, value, alpha, beta, maximizingPlayer, 'Minimizing');
+
                 if (beta <= alpha) {
+                    recordHistory(nodeId, highlightedNodes, highlightedEdges, value, alpha, beta, maximizingPlayer, 'Minimizing Pruning');
                     break; // Alpha pruning
+                } else {
+                    recordHistory(nodeId, highlightedNodes, highlightedEdges, value, alpha, beta, maximizingPlayer, 'Minimizing Node');
+
                 }
             }
         }
@@ -115,34 +123,40 @@ const algorithms = [
 
 const exampleDatasets = [
     {
-        name: "Adversarial Search with Pruning Example",
+        name: " 2, 3, 5, 9, 0, 1, 7, 5",
         nodes: [
-            { id: 'A', label: 'A' },  // Root node
-            { id: 'B', label: 'B' },
-            { id: 'C', label: 'C' },
-            { id: 'D', label: 'D' },
-            { id: 'E', label: 'E' },
-            { id: 'F', label: 'F' },
-            { id: 'G', label: 'G' },
-            { id: 'H', label: 'H' },
-            { id: 'I', label: 'I' },
-            { id: 'J', label: 'J' },
-            { id: 'K', label: 'K' },
-            { id: 'L', label: 'L' }
+            { id: 'A', label: 'A', value: 2 },
+            { id: 'B', label: 'B', value: 3 },
+            { id: 'C', label: 'C', value: 5 },
+            { id: 'D', label: 'D', value: 9 },
+            { id: 'E', label: 'E', value: 0 },
+            { id: 'F', label: 'F', value: 1 },
+            { id: 'G', label: 'G', value: 7 },
+            { id: 'H', label: 'H', value: 5 },
+            // Also add the non leaf nodes pairing (a, b), (c, d)... (g, h)
+            { id: 'AB', label: 'AB', value: null },
+            { id: 'CD', label: 'CD', value: null },
+            { id: 'EF', label: 'EF', value: null },
+            { id: 'GH', label: 'GH', value: null },
+            { id: 'ABCD', label: 'ABCD', value: null },
+            { id: 'EFGH', label: 'EFGH', value: null },
+            { id: 'ABCDEFGH', label: 'ABCDEFGH', value: null },
         ],
         edges: [
-            { id: 'A->B', source: 'A', target: 'B', label: 'A->B' },
-            { id: 'A->C', source: 'A', target: 'C', label: 'A->C' },
-            { id: 'B->D', source: 'B', target: 'D', label: 'B->D' },
-            { id: 'B->E', source: 'B', target: 'E', label: 'B->E' },
-            { id: 'C->F', source: 'C', target: 'F', label: 'C->F' },
-            { id: 'C->G', source: 'C', target: 'G', label: 'C->G' },
-            { id: 'D->H', source: 'D', target: 'H', label: '3', value: 3 },
-            { id: 'D->I', source: 'D', target: 'I', label: '5', value: 5 },
-            { id: 'E->J', source: 'E', target: 'J', label: '6', value: 6 },
-            { id: 'E->K', source: 'E', target: 'K', label: '9', value: 9 },
-            { id: 'F->L', source: 'F', target: 'L', label: '1', value: 1 }
-            // Note: Node G and its descendants are pruned and not expanded.
+            { id: 'ABCDEFGH -> ABCD', source: 'ABCDEFGH', target: 'ABCD', label: '> ABCD' },
+            { id: 'ABCDEFGH -> EFGH', source: 'ABCDEFGH', target: 'EFGH', label: '> EFGH' },
+            { id: 'ABCD -> AB', source: 'ABCD', target: 'AB', label: '> AB' },
+            { id: 'ABCD -> CD', source: 'ABCD', target: 'CD', label: '> CD' },
+            { id: 'EFGH -> EF', source: 'EFGH', target: 'EF', label: '> EF' },
+            { id: 'EFGH -> GH', source: 'EFGH', target: 'GH', label: '> GH' },
+            { id: 'AB -> A', source: 'AB', target: 'A', label: '> A' },
+            { id: 'AB -> B', source: 'AB', target: 'B', label: '> B' },
+            { id: 'CD -> C', source: 'CD', target: 'C', label: '> C' },
+            { id: 'CD -> D', source: 'CD', target: 'D', label: '> D' },
+            { id: 'EF -> E', source: 'EF', target: 'E', label: '> E' },
+            { id: 'EF -> F', source: 'EF', target: 'F', label: '> F' },
+            { id: 'GH -> G', source: 'GH', target: 'G', label: '> G' },
+            { id: 'GH -> H', source: 'GH', target: 'H', label: '> H' }
         ]
     }
 ];
