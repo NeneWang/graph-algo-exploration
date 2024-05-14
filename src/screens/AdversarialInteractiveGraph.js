@@ -150,6 +150,9 @@ const exampleDatasets = [
             { id: 'EF -> F', source: 'EF', target: 'F', label: '> F' },
             { id: 'GH -> G', source: 'GH', target: 'G', label: '> G' },
             { id: 'GH -> H', source: 'GH', target: 'H', label: '> H' }
+        ],
+        desc_img: [
+            'https://www.webpagescreenshot.info/image-url/ArWcsfuwE'
         ]
     }
 ];

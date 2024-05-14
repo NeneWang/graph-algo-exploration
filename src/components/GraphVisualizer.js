@@ -261,6 +261,11 @@ function GraphVisualizer({ algorithms, examplesDatasets }) {
                 <Row>
                     <TableDisplayer tableData={tableData} />
                 </Row>
+                <Row>
+                    {selectedExample.desc_img && selectedExample.desc_img.map((img, index) => (
+                        <img key={index} src={img} alt="description" />
+                    ))}
+                </Row>
                 <br />
                 <small className="text-muted">&copy; 2024</small>
                 <br />
