@@ -191,11 +191,12 @@ const exampleDatasets = [
             {id: 'ABCD -> AB', source: 'ABCD', target: 'AB', label: '> AB' },
             {id: 'ABCD -> IJ', source: 'ABCD', target: 'IJ', label: '> IJ' },
             {id: 'IJKLM -> KLM', source: 'IJKLM', target: 'KLM', label: '> KLM' },
+            {id: 'EFGH -> FG', source: 'EFGH', target: 'FG', label: '> FG' },
+
             {id: 'ABCD->C', source: 'ABCD', target: 'C', label: '> C'},
             {id: 'ABCD->D', source: 'ABCD', target: 'D', label: '> D'},
             {id: 'EFGH->E', source: 'EFGH', target: 'E', label: '> E'},
             {id: 'EFGH->H', source: 'EFGH', target: 'H', label: '> H'},
-            
             {id: 'IJ->I', source: 'IJ', target: 'I', label: '> I'},
             {id: 'IJ->J', source: 'IJ', target: 'J', label: '> J'},
             {id: 'KLM->K', source: 'KLM', target: 'K', label: '> K'},
