@@ -152,7 +152,7 @@ const exampleDatasets = [
             { id: 'GH -> H', source: 'GH', target: 'H', label: '> H' }
         ],
         desc_img: [
-            'https://www.webpagescreenshot.info/image-url/KtcW8brny'
+            'https://www.webpagescreenshot.info/image-url/ArWcsfuwE'
         ],
         desc: [
             'Figure 1: https://www.mygreatlearning.com/blog/alpha-beta-pruning-in-ai/'
@@ -208,7 +208,7 @@ const exampleDatasets = [
             {id: 'FG->G', source: 'FG', target: 'G', label: '> G'},
         ],
         desc_img: [
-            'https://ctrl.vi/i/KtcW8brny'
+            'https://www.webpagescreenshot.info/image-url/KtcW8brny'
         ],
         desc: [
             'Figure 1: https://stackoverflow.com/questions/59974673/minimax-question-regarding-alpha-beta-pruning'
