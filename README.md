@@ -36,8 +36,7 @@ npm run dev
   - [x] Floyd Warshall  
 
 
-
-Unplaned, originally that I want to add
+Given the contents of the class, here are additional visualizations that I want to add.
 
 - [ ] Heapify Illustration
 - [ ] Travel Salesman Visualization
