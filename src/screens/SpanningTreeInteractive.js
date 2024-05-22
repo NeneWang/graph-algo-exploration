@@ -594,7 +594,6 @@ export function SpanningInteractiveGraph() {
 
     useEffect(() => {
         createSmallestEdgesHeap()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
 

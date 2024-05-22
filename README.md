@@ -3,34 +3,59 @@
 The project aims to develop interactive visualizations for a set of algorithms, coupled with references to relevant problems and test sets. Must-have algorithms include visualizations from algorithm such as Kruskal's Algorithm, Prim's Algorithm, A* Search, Adversarial Search and Pruning, and Minimum Spanning Tree. Problems references to relevant problems and test sets will be included for each algorithm. Optionally the student will attempt into developing
 visualizations for: Fleury's Algorithm, Connected Components, Topological Sort, Floyd Warshall, Greedy Algorithm, Heapify, and Bellman Ford Algorithm.
 
+
+## Local Setup
+
+Instructions to run on Local machine:
+
+Assuming that [npm is already installed.](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+
+
+```
+npm i
+npm run dev
+```
+
+## Roadmap
+
 **Mandatory**
-
-
 **Minimum Spanning Trees**
 - [x] Kruskal's Algorthm
 - [x] Prim's Algorithm
-- [x] Adversarial Search and Prunning
-
-
-
 
 
 **Additional**
+- [x] Adversarial Search and Prunning
+- [x] Single Source Shortest Path
+  - [x] Bellman Ford
+  - [x] Dijikstra
+- [x] All Pair Shortest Path
+  - [x] Floyd Warshall  
+
+
+
+Unplaned, originally that I want to add
+
+- [ ] Heapify Illustration
+- [ ] Travel Salesman Visualization
+- [ ] Cross Subarray
+- [ ] DFS, BFS
+- [ ] Master Theorem Visualization
+
+
+**Backlog**
 
 - [ ] Fleury's Algorithm
 - [ ] Connected Components
 - [ ] Topological Sort
-- [ ] Floyd Warshall
 - [ ] Greedy Algorithm
-- [ ] Heapify
-- [ ] Bellman Ford Algorithm.
+
 
 ## Illustrated Problems:
 
 - [x] Minimal Spanning Tree
   - [x] Prims
   - [x] Kruskal
-- [ ] Find Best Path
 
 
 ### Minimal Spanning Tree
@@ -100,9 +125,10 @@ $ git remote add origin https://github.com/nenewang/graph-algo-exploration.git
 
 ## Backlog
 
-- [ ] Add Prism Algorithm for visualization
-- [ ] Draw Analogies 
+- [x] Add Prism Algorithm for visualization
+- [x] Draw Analogies 
 - [ ] Add A* Search for visualization
-- [ ] Add Adversarial Search and Pruning for visualization
+  - [ ] Problem: this requires a different kind of chart.
+- [x] Add Adversarial Search and Pruning for visualization
 
 
