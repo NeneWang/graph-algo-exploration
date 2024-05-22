@@ -42,7 +42,6 @@ function GraphVisualizer({ algorithms, examplesDatasets }) {
     };
 
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     const nextStepAlgorithm = useCallback(async () => {
         if (needsToReset) {
             setStep(0)
@@ -120,14 +119,12 @@ function GraphVisualizer({ algorithms, examplesDatasets }) {
         setHighlightedIds([])
         setIsAlgorithmFinished(false)
         setIsDirected(selectedExample?.isDirected ?? false)
-        console.log(selectedExample, 'isDirected')
         precalculateAlgorithmSteps(selectedAlgorithm, nodes, edges)
         // displayAlgorithmStep()
     }
 
     useEffect(() => {
         resetAlgorithm()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
 
@@ -263,6 +260,16 @@ function GraphVisualizer({ algorithms, examplesDatasets }) {
                 </Row>
                 <Row>
                     <TableDisplayer tableData={tableData} />
+                </Row>
+                <Row>
+                    {selectedExample.desc_img && selectedExample.desc_img.map((img, index) => (
+                        <img key={index} src={img} alt="description" />
+                    ))}
+                </Row>
+                <Row>
+                    {selectedExample.desc && selectedExample.desc.map((text, index) => (
+                        <p key={index}>{text}</p>
+                    ))                    }
                 </Row>
                 <br />
                 <small className="text-muted">&copy; 2024</small>

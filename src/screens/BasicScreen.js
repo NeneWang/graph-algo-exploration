@@ -61,7 +61,6 @@ export const BasicScreen = () => (
     {/* Have a table of cards */}
     {/* Rows */}
     <br />
-    <h3>Choose Your Own Poison</h3>
 
     <Row xs={2} md={3} lg={4} className="g-5">
       {featuredProblems.map((_, idx) => (
