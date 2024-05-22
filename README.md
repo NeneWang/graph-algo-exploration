@@ -9,12 +9,10 @@ visualizations for: Fleury's Algorithm, Connected Components, Topological Sort, 
 **Minimum Spanning Trees**
 - [x] Kruskal's Algorthm
 - [x] Prim's Algorithm
-
-Shortest Path Search Algorithms
-- [ ] A* Search
+- [x] Adversarial Search and Prunning
 
 
-- [ ] Adversarial Search and Prunning
+
 
 
 **Additional**
