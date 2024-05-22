@@ -1,7 +1,10 @@
 # Graph Algo Exploration
 
-The project aims to develop interactive visualizations for a set of algorithms, coupled with references to relevant problems and test sets. Must-have algorithms include visualizations from algorithm such as Kruskal's Algorithm, Prim's Algorithm, A* Search, Adversarial Search and Pruning, and Minimum Spanning Tree. Problems references to relevant problems and test sets will be included for each algorithm. Optionally the student will attempt into developing
+The project aims to develop interactive visualizations for a set of algorithms, coupled with references to relevant problems and test sets. Must-have algorithms include visualizations from algorithm such as Kruskal's Algorithm, Prim's Algorithm,  Adversarial Search and Pruning, and Minimum Spanning Tree. Problems references to relevant problems and test sets will be included for each algorithm. Optionally the student will attempt into developing
 visualizations for: Fleury's Algorithm, Connected Components, Topological Sort, Floyd Warshall, Greedy Algorithm, Heapify, and Bellman Ford Algorithm.
+
+Note:
+A* Search requires a grid like format to represent, and enable heuristics calculations. Therefore I had to remove it (temporary).
 
 
 ## Local Setup
