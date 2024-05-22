@@ -110,16 +110,12 @@ Introduction to Algorithms, 4rth Edition, Cormen, Leiserson, Rivest, Stein
 - 
 
 
-## Current Features
-
-
-
-
 ## Deployment
 
 ```
 $ npm install gh-pages --save-dev
 $ git remote add origin https://github.com/nenewang/graph-algo-exploration.git
+npm run deploy
 ```
 
 
